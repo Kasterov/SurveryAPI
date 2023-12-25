@@ -42,9 +42,12 @@ public class PostRepository : IPostRepository
         return result.Entity;
     }
 
-    public Task<IEnumerable<Post>> GetAll()
+    public async Task<IEnumerable<Post>> GetAll()
     {
-        throw new NotImplementedException();
+        return await _context.Posts
+            .Include(post => post.Options)
+            .ThenInclude(opt => opt.Votes)
+            .ToListAsync();
     }
 
     public async Task<Post> GetById(int id)

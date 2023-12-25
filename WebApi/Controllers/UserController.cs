@@ -17,7 +17,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("user")]
-    public async Task<IActionResult> CreateAssignment([FromBody] CreateUserDTO command)
+    public async Task<IActionResult> CreateUser([FromBody] CreateUserDTO command)
     {
         var result = await _mediator.Send(new CreateUser(command));
 
@@ -33,7 +33,7 @@ public class UserController : ControllerBase
     //}
 
     [HttpGet("user")]
-    public async Task<IActionResult> GetAssignmentById([FromQuery] GetUserById query)
+    public async Task<IActionResult> GetUserById([FromQuery] GetUserById query)
     {
         var result = await _mediator.Send(query);
 

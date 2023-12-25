@@ -51,6 +51,14 @@ public class PostController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("postlitelist")]
+    public async Task<IActionResult> GetPostLiteList()
+    {
+        var result = await _mediator.Send(new GetPostLiteList());
+
+        return Ok(result);
+    }
+
     //[HttpPut("assignment")]
     //public async Task<IActionResult> EditAssignment([FromBody] EditAssignment command)
     //{

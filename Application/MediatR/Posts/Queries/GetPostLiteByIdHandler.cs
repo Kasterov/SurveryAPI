@@ -36,7 +36,7 @@ public class GetPostLiteByIdHandler : IRequestHandler<GetPostLiteById, PostLiteD
 
         PostLiteDTO postLiteDTO = new PostLiteDTO()
         {
-            AuthorId = post.AuthorId,
+            //Author = post.Author,
             Title = post.Title,
             Votes = votes
         };

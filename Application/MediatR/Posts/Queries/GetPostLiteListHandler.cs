@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Posts;
 using Application.DTOs.Posts;
+using Application.DTOs.Users;
 using Application.DTOs.Votes;
 using AutoMapper;
 using MediatR;
@@ -27,27 +28,9 @@ public class GetPostLiteListHandler : IRequestHandler<GetPostLiteList, IEnumerab
 
         foreach (var post in postList)
         {
-            if (post.Options == null || post.Options.Count == 0)
-            {
-                continue;
-            }
-
-            var votes = post.Options.Select(opt => new VoteLiteDTO()
-            {
-                Option = opt.Title,
-                Count = opt.Votes.Count
-            });
-
-            PostLiteDTO postLiteDTO = new PostLiteDTO()
-            {
-                AuthorId = post.AuthorId,
-                Title = post.Title,
-                Votes = votes
-            };
-
-            postLiteList.Add(postLiteDTO);
+            post.TotalCount = post.Votes.Sum(vote => vote.Count);
         }
 
-        return postLiteList;
+        return postList.OrderByDescending(x => x.Created);
     }
 }

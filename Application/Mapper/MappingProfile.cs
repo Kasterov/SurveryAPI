@@ -15,5 +15,6 @@ public class MappingProfile : Profile
         CreateMap<Post, PostDTO>().ReverseMap();
         CreateMap<PoolOptionDTO, PoolOption>().ReverseMap();
         CreateMap<VoteDTO, Vote>().ReverseMap();
+        CreateMap<PoolOption, PoolOptionBaseDTO>().ReverseMap();
     }
 }

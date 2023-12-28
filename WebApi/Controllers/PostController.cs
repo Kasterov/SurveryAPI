@@ -59,6 +59,14 @@ public class PostController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("pooloptionlist")]
+    public async Task<IActionResult> GetPoolOptionList(int id)
+    {
+        var result = await _mediator.Send(new PoolOptionsForVoteByPostId(id));
+
+        return Ok(result);
+    }
+
     //[HttpPut("assignment")]
     //public async Task<IActionResult> EditAssignment([FromBody] EditAssignment command)
     //{

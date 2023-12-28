@@ -1,6 +1,8 @@
-﻿namespace Application.DTOs.Votes;
+﻿using Application.DTOs.Common;
 
-public class VoteLiteDTO
+namespace Application.DTOs.Votes;
+
+public class VoteLiteDTO : BaseDTO
 {
     public string Option { get; set; }
     public int Count { get; set; }

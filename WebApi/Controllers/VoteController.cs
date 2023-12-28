@@ -27,6 +27,14 @@ public class VoteController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("votelist")]
+    public async Task<IActionResult> CreateVoteList(CreateVoteListDTO command)
+    {
+        var result = await _mediator.Send(new CreateVoteList(command));
+
+        return Ok(result);
+    }
+
     //[HttpGet("assignments")]
     //public async Task<IActionResult> GetAllAssignments([FromQuery] GetAllAssignments query)
     //{

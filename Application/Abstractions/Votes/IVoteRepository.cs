@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using System.Collections.Generic;
 
 namespace Application.Abstractions.Votes;
 
@@ -8,7 +9,7 @@ public interface IVoteRepository
 
     public Task<Vote> GetById(int id);
     public Task<Vote> Add(Vote vote);
-
+    public Task<IEnumerable<Vote>> AddList(IEnumerable<Vote> voteList);
     public Task<Vote> Update(Vote vote);
 
     public Task<Vote> Delete(int id);

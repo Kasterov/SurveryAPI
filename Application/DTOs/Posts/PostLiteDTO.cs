@@ -1,10 +1,19 @@
-﻿using Application.DTOs.Votes;
+﻿using Application.DTOs.Common;
+using Application.DTOs.Users;
+using Application.DTOs.Votes;
 
 namespace Application.DTOs.Posts;
 
-public class PostLiteDTO
+public class PostLiteDTO : BaseDTO
 {
     public string Title { get; set; }
-    public int AuthorId { get; set; }
+    public AuthorDTO Author { get; set; }
+    public int TotalCount { get; set; }
     public IEnumerable<VoteLiteDTO> Votes { get; set; }
+}
+
+public class AuthorDTO : BaseDTO
+{
+    public string Name { get; set;}
+
 }

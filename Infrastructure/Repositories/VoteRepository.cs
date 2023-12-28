@@ -2,6 +2,7 @@
 using Application.Abstractions.Votes;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace Infrastructure.Repositories;
 
@@ -19,6 +20,14 @@ public class VoteRepository : IVoteRepository
         await _context.SaveChangesAsync();
 
         return result.Entity;
+    }
+
+    public async Task<IEnumerable<Vote>> AddList(IEnumerable<Vote> voteList)
+    {
+        _context.Votes.AddRange(voteList);
+        await _context.SaveChangesAsync();
+
+        return voteList;
     }
 
     public async Task<Vote> Delete(int id)

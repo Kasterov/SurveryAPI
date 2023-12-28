@@ -1,5 +1,7 @@
 ﻿using Application.Abstractions.Common;
 using Application.Abstractions.Posts;
+using Application.DTOs.Posts;
+using Application.DTOs.Votes;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,12 +44,72 @@ public class PostRepository : IPostRepository
         return result.Entity;
     }
 
-    public async Task<IEnumerable<Post>> GetAll()
+    //public async Task<IEnumerable<PostLiteDTO>> GetAll()
+    //{
+    //    List<Post> postList = await _context.Posts
+    //        .Include(post => post.Options)
+    //        .ThenInclude(opt => opt.Votes)
+    //        .ToListAsync();
+
+    //    List<PostLiteDTO> postLiteDTOList = new List<PostLiteDTO>();
+
+    //    foreach (var post in postList)
+    //    {
+    //        User author = await _context.Users.SingleAsync(user => user.Id == post.AuthorId);
+
+    //        AuthorDTO authorDTO = new AuthorDTO()
+    //        {
+    //            Name = author.Name,
+    //            Id = author.Id,
+    //        };
+
+    //        var votes = post.Options.Select(opt => new VoteLiteDTO()
+    //        {
+    //            Id = opt.Id,
+    //            Option = opt.Title,
+    //            Count = opt.Votes.Count
+    //        });
+
+    //        PostLiteDTO postLiteDTO = new PostLiteDTO()
+    //        {
+    //            Id = post.Id,
+    //            Title = post.Title,
+    //            Author = authorDTO,
+    //            Created = post.Created,
+    //            LastModified = post.LastModified,
+    //            Votes = votes
+    //        };
+
+    //        postLiteDTOList.Add(postLiteDTO);
+    //    }
+
+    //    return postLiteDTOList;
+    //}
+
+    public async Task<IEnumerable<PostLiteDTO>> GetAll()
     {
-        return await _context.Posts
-            .Include(post => post.Options)
-            .ThenInclude(opt => opt.Votes)
-            .ToListAsync();
+
+        List<PostLiteDTO> postLiteDTOList = await _context.Posts.Select(post => new PostLiteDTO()
+            {
+                Id = post.Id,
+                Title = post.Title,
+                Created = post.Created,
+                LastModified = post.LastModified,
+                Author = new AuthorDTO()
+                {
+                    Name = post.Author.Name,
+                    Id = post.Author.Id,
+                },
+                Votes = post.Options.Select(o => new VoteLiteDTO()
+                {
+                    Id = o.Id,
+                    Option = o.Title,
+                    Count = o.Votes.Count,
+                })
+        }).AsNoTracking()
+        .ToListAsync();
+
+        return postLiteDTOList;
     }
 
     public async Task<Post> GetById(int id)

@@ -11,6 +11,9 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
 );
 
+builder.Services.AddSwaggerGenCustom();
+builder.Authentication();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>

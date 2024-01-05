@@ -3,6 +3,7 @@ using Application.Abstractions.Users;
 using Infrastructure.Db;
 using Infrastructure.Interceptors;
 using Infrastructure.Services.Users;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,9 @@ public static class DependencyInjection
         var connectionString = configuration.GetConnectionString("DefualtConnection");
 
         services.AddScoped<IVerifyPasswordService, VerifyPasswordService>();
+        services.AddScoped<IJWTGeneratorService, JWTGeneratorService>();
+        services.AddScoped<IIdentity, UserIdentity>();
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
         services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();

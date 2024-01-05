@@ -1,4 +1,5 @@
-﻿using Application.Abstractions.Votes;
+﻿using Application.Abstractions.Users;
+using Application.Abstractions.Votes;
 using Application.DTOs.Votes;
 using AutoMapper;
 using Domain.Entities;
@@ -12,13 +13,16 @@ public class CreateVoteListHandler : IRequestHandler<CreateVoteList, IEnumerable
 {
     private readonly IVoteRepository _repository;
     private readonly IMapper _mapper;
+    private readonly IIdentity _identity;
 
     public CreateVoteListHandler(
         IVoteRepository repository,
-        IMapper mapper)
+        IMapper mapper,
+        IIdentity identity)
     {
         _repository = repository;
         _mapper = mapper;
+        _identity = identity;
     }
 
     public async Task<IEnumerable<VoteDTO>> Handle(CreateVoteList request, CancellationToken cancellationToken)
@@ -26,7 +30,7 @@ public class CreateVoteListHandler : IRequestHandler<CreateVoteList, IEnumerable
         var voteList = request.dto.VoteIdList.Select(vote => new Vote()
         {
             PoolOptionId = vote,
-            UserId = request.dto.UserId
+            UserId = Convert.ToInt32(_identity.UserId)
         });
 
         var entities = await _repository.AddList(voteList);

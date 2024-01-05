@@ -5,7 +5,9 @@ using Application.MediatR.Posts.Queries;
 using Application.MediatR.Users.Commands;
 using Application.MediatR.Users.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace WebApi.Controllers;
 
@@ -19,6 +21,7 @@ public class PostController : ControllerBase
         _mediator = mediator;
     }
 
+    [Authorize]
     [HttpPost("post")]
     public async Task<IActionResult> CreatePost(CreatePostDTO command)
     {
@@ -67,6 +70,15 @@ public class PostController : ControllerBase
         return Ok(result);
     }
 
+    [Authorize]
+    [HttpGet("postmenu")]
+    public async Task<IActionResult> GetPostListTable()
+    {
+        var result = await _mediator.Send(new GetTableOfPostList());
+
+        return Ok(result);
+    }
+
     //[HttpPut("assignment")]
     //public async Task<IActionResult> EditAssignment([FromBody] EditAssignment command)
     //{
@@ -75,6 +87,7 @@ public class PostController : ControllerBase
     //    return Ok(result);
     //}
 
+    [Authorize]
     [HttpDelete("post")]
     public async Task<IActionResult> DeletePost(int id)
     {

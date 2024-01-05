@@ -7,7 +7,10 @@ public interface IPostRepository
 {
     public Task<IEnumerable<PostLiteDTO>> GetAll();
 
+    public Task<IEnumerable<PostTableFullDTO>> GetTablePostList(int UserId);
+
     public Task<Post> GetById(int id);
+
     public Task<Post> Add(Post post);
 
     public Task<Post> Update(Post post);

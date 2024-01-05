@@ -33,14 +33,23 @@ public class UserRepository : IUserRepository
 
     public async Task<User> GetById(int id)
     {
-        var assignment = await _context.Users
+        var user = await _context.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(ass => ass.Id == id);
 
-        return assignment;
+        return user;
     }
 
-    public Task<User> Update(User assignment)
+    public async Task<User> GetByName(string Name)
+    {
+        var user = await _context.Users
+           .AsNoTracking()
+           .FirstOrDefaultAsync(user => user.Name == Name);
+
+        return user;
+    }
+
+    public Task<User> Update(User user)
     {
         throw new NotImplementedException();
     }

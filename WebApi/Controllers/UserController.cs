@@ -24,6 +24,14 @@ public class UserController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("signin")]
+    public async Task<IActionResult> SignInUser([FromBody] SignInDTO query)
+    {
+        var result = await _mediator.Send(new SignIn(query));
+
+        return Ok(result);
+    }
+
     //[HttpGet("assignments")]
     //public async Task<IActionResult> GetAllAssignments([FromQuery] GetAllAssignments query)
     //{

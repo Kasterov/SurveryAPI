@@ -15,13 +15,16 @@ public class CreatePostHandler : IRequestHandler<CreatePost, PostDTO>
 {
     private readonly IPostRepository _repository;
     private readonly IMapper _mapper;
+    private readonly IIdentity _identity;
 
     public CreatePostHandler(
         IPostRepository repository,
-        IMapper mapper)
+        IMapper mapper,
+        IIdentity identity)
     {
         _repository = repository;
         _mapper = mapper;
+        _identity = identity;
     }
 
     public async Task<PostDTO> Handle(CreatePost request, CancellationToken cancellationToken)
@@ -32,7 +35,7 @@ public class CreatePostHandler : IRequestHandler<CreatePost, PostDTO>
         {
             Title = dto.Title,
             Description = dto.Description,
-            AuthorId = dto.AuthorId,
+            AuthorId = Convert.ToInt32(_identity.UserId),
             Options = dto.Options.Select(opt => new PoolOption()
             {
                 Title = opt.Title

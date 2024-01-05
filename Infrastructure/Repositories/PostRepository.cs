@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Common;
 using Application.Abstractions.Posts;
+using Application.DTOs.PoolOptions;
 using Application.DTOs.Posts;
 using Application.DTOs.Votes;
 using Domain.Entities;
@@ -44,48 +45,6 @@ public class PostRepository : IPostRepository
         return result.Entity;
     }
 
-    //public async Task<IEnumerable<PostLiteDTO>> GetAll()
-    //{
-    //    List<Post> postList = await _context.Posts
-    //        .Include(post => post.Options)
-    //        .ThenInclude(opt => opt.Votes)
-    //        .ToListAsync();
-
-    //    List<PostLiteDTO> postLiteDTOList = new List<PostLiteDTO>();
-
-    //    foreach (var post in postList)
-    //    {
-    //        User author = await _context.Users.SingleAsync(user => user.Id == post.AuthorId);
-
-    //        AuthorDTO authorDTO = new AuthorDTO()
-    //        {
-    //            Name = author.Name,
-    //            Id = author.Id,
-    //        };
-
-    //        var votes = post.Options.Select(opt => new VoteLiteDTO()
-    //        {
-    //            Id = opt.Id,
-    //            Option = opt.Title,
-    //            Count = opt.Votes.Count
-    //        });
-
-    //        PostLiteDTO postLiteDTO = new PostLiteDTO()
-    //        {
-    //            Id = post.Id,
-    //            Title = post.Title,
-    //            Author = authorDTO,
-    //            Created = post.Created,
-    //            LastModified = post.LastModified,
-    //            Votes = votes
-    //        };
-
-    //        postLiteDTOList.Add(postLiteDTO);
-    //    }
-
-    //    return postLiteDTOList;
-    //}
-
     public async Task<IEnumerable<PostLiteDTO>> GetAll()
     {
 
@@ -121,6 +80,37 @@ public class PostRepository : IPostRepository
            .FirstOrDefaultAsync(ass => ass.Id == id);
 
         return post;
+    }
+
+    public async Task<IEnumerable<PostTableFullDTO>> GetTablePostList(int UserId)
+    {
+        var posts = await _context.Posts
+            .Where(post => post.AuthorId == UserId)
+            .Select(post => new PostTableFullDTO()
+        {
+            Id = post.Id,
+            Title = post.Title,
+            Status = 1,
+            Created = post.Created,
+            LastModified = post.LastModified,
+            PoolOptions = post.Options.Select(opt => new PoolOptionDTO()
+            {
+                Title = opt.Title,
+                Votes = opt.Votes.Select(vote => new VoteDTO() 
+                {
+                    Id = vote.Id,
+                    User = new Application.DTOs.Users.UserDTO()
+                    {
+                        Name = vote.User.Name,
+                        Id = vote.User.Id
+                    },
+                    PoolOptionId = vote.PoolOptionId
+                })
+            }),
+        }).AsNoTracking()
+        .ToListAsync();
+
+        return posts;
     }
 
     public Task<Post> Update(Post assignment)

@@ -9,6 +9,7 @@ public class PostLiteDTO : BaseDTO
     public string Title { get; set; }
     public AuthorDTO Author { get; set; }
     public int TotalCount { get; set; }
+    public bool IsMultiple { get; set; }
     public IEnumerable<VoteLiteDTO> Votes { get; set; }
 }
 

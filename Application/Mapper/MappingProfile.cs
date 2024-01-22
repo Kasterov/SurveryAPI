@@ -7,7 +7,7 @@ using Domain.Entities;
 
 namespace Application.Mapper;
 
-public class MappingProfile : Profile
+public class MappingProfile : AutoMapper.Profile
 {
     public MappingProfile()
     {

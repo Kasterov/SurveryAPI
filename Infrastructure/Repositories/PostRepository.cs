@@ -3,8 +3,10 @@ using Application.Abstractions.Posts;
 using Application.DTOs.PoolOptions;
 using Application.DTOs.Posts;
 using Application.DTOs.Votes;
+using Azure.Core;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories;
 
@@ -24,9 +26,9 @@ public class PostRepository : IPostRepository
         return result.Entity;
     }
 
-    public async Task<Post> Delete(int id)
+    public async Task<Post> Delete(int postId, int userId)
     {
-        var postToDelete = await _context.Posts.FirstOrDefaultAsync(ass => ass.Id == id);
+        var postToDelete = await _context.Posts.FirstOrDefaultAsync(ass => ass.Id == postId && ass.AuthorId == userId);
 
         if (postToDelete is null)
         {
@@ -82,10 +84,10 @@ public class PostRepository : IPostRepository
         return post;
     }
 
-    public async Task<IEnumerable<PostTableFullDTO>> GetTablePostList(int UserId)
+    public async Task<IEnumerable<PostTableFullDTO>> GetTablePostList(int userId)
     {
         var posts = await _context.Posts
-            .Where(post => post.AuthorId == UserId)
+            .Where(post => post.AuthorId == userId)
             .Select(post => new PostTableFullDTO()
         {
             Id = post.Id,

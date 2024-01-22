@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Posts;
+﻿using Application.DTOs.General;
+using Application.DTOs.Posts;
 using Application.DTOs.Users;
 using Application.MediatR.Posts.Commands;
 using Application.MediatR.Posts.Queries;
@@ -72,9 +73,9 @@ public class PostController : ControllerBase
 
     [Authorize]
     [HttpGet("postmenu")]
-    public async Task<IActionResult> GetPostListTable()
+    public async Task<IActionResult> GetPostListTable([FromQuery] PaginationRequestDTO paginationRequestDTO)
     {
-        var result = await _mediator.Send(new GetTableOfPostList());
+        var result = await _mediator.Send(new GetTableOfPostList(paginationRequestDTO));
 
         return Ok(result);
     }

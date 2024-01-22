@@ -29,6 +29,7 @@ public class GetPoolOptionsByPostIdHandler : IRequestHandler<PoolOptionsForVoteB
             Id = post.Id,
             Title = post.Title,
             Description = post.Description,
+            IsMultiple = post.IsMultiple,
             Options = _mapper.Map<IEnumerable<PoolOptionBaseDTO>>(post.Options)
         };
 

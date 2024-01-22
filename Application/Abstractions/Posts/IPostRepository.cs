@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.Posts;
 using Domain.Entities;
+using System.Linq.Expressions;
 
 namespace Application.Abstractions.Posts;
 
@@ -7,7 +8,7 @@ public interface IPostRepository
 {
     public Task<IEnumerable<PostLiteDTO>> GetAll();
 
-    public Task<IEnumerable<PostTableFullDTO>> GetTablePostList(int UserId);
+    public Task<IEnumerable<PostTableFullDTO>> GetTablePostList(int userId);
 
     public Task<Post> GetById(int id);
 
@@ -15,5 +16,5 @@ public interface IPostRepository
 
     public Task<Post> Update(Post post);
 
-    public Task<Post> Delete(int id);
+    public Task<Post> Delete(int postId, int userId);
 }

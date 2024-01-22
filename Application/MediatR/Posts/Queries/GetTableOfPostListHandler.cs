@@ -1,15 +1,19 @@
 ﻿using Application.Abstractions.Posts;
 using Application.Abstractions.Users;
+using Application.DTOs.General;
 using Application.DTOs.Posts;
 using AutoMapper;
+using Domain.Entities;
 using MediatR;
-
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace Application.MediatR.Posts.Queries;
 
-public record GetTableOfPostList() : IRequest<IEnumerable<PostTableDTO>>;
+public record GetTableOfPostList(PaginationRequestDTO PaginationRequestDTO) : IRequest<PaginationResponseDTO<PostTableDTO>>;
 
-public class GetTableOfPostListHandler : IRequestHandler<GetTableOfPostList, IEnumerable<PostTableDTO>>
+public class GetTableOfPostListHandler : IRequestHandler<GetTableOfPostList, PaginationResponseDTO<PostTableDTO>>
 {
     private readonly IPostRepository _postRepository;
     private readonly IMapper _mapper;
@@ -25,24 +29,33 @@ public class GetTableOfPostListHandler : IRequestHandler<GetTableOfPostList, IEn
         _identity = identity;
     }
 
-    public async Task<IEnumerable<PostTableDTO>> Handle(GetTableOfPostList request, CancellationToken cancellationToken)
+    public async Task<PaginationResponseDTO<PostTableDTO>> Handle(GetTableOfPostList request, CancellationToken cancellationToken)
     {
+        string searchQuery = request.PaginationRequestDTO.SearchQuery;
+        string sortColumn = request.PaginationRequestDTO.SortColumn;
+        string sortOrder = request.PaginationRequestDTO.SortOrder;
+        int page = request.PaginationRequestDTO.Page;
+        int pageSize = request.PaginationRequestDTO.PageSize;
+
         int currentUserId = Convert.ToInt32(_identity.UserId);
 
-        var postList = await _postRepository.GetTablePostList(currentUserId);
+        IEnumerable<PostTableFullDTO> postList = new List<PostTableFullDTO>();
+
+        postList = await _postRepository.GetTablePostList(currentUserId);
+        
         var postTableDTOList = new List<PostTableDTO>();
 
         foreach (var post in postList)
         {
-            int voteCount = post.PoolOptions
-                .SelectMany(po => po.Votes).Count();
+            var allVotesForPost = post.PoolOptions
+                .SelectMany(po => po.Votes);
 
-            int peopleCount = post.PoolOptions
-                .SelectMany(po => po.Votes
-                .Select(vote => vote.User.Id))
+            int voteCount = allVotesForPost.Count();
+
+            int peopleCount = allVotesForPost
+                .Select(vote => vote.User.Id)
                 .Distinct()
                 .Count();
-
 
             var postTableDTO = new PostTableDTO()
             {
@@ -56,6 +69,30 @@ public class GetTableOfPostListHandler : IRequestHandler<GetTableOfPostList, IEn
             postTableDTOList.Add(postTableDTO);
         }
 
-        return postTableDTOList;
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            postTableDTOList = postTableDTOList.Where(post => post.Title.Contains(searchQuery)).ToList();
+        }
+
+        Expression<Func<PostTableDTO, object>> keySortSelector = sortColumn?.ToLower() switch
+        {
+            "title" => product => product.Title,
+            "votes" => product => product.Votes,
+            "people" => product => product.People,
+            _ => product => product.Id
+        };
+
+        if (sortOrder?.ToLower() == "desc")
+            postTableDTOList = postTableDTOList.AsQueryable().OrderByDescending(keySortSelector).ToList();
+        else
+        {
+            postTableDTOList = postTableDTOList.AsQueryable().OrderBy(keySortSelector).ToList();
+        }
+
+        return new PaginationResponseDTO<PostTableDTO>()
+        {
+            ResponseList = postTableDTOList.Skip((page - 1) * pageSize).Take(pageSize),
+            TotalCount = postTableDTOList.Count()
+        };
     }
 }

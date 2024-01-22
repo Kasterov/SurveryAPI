@@ -36,7 +36,6 @@ public class CreateUserHandler : IRequestHandler<CreateUser, UserDTO>
             Email = dto.Email,
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
-            Gender = dto.Gender,
             DateOfBirth = dto.DateOfBirth
         };
 

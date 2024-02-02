@@ -5,7 +5,7 @@ public enum SallaryGrade
     Unknown = 0,
 
     /// <summary>
-    /// Up to 800 $
+    /// Up to 400 $
     /// </summary>
     Low = 1,
 

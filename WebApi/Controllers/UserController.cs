@@ -24,7 +24,7 @@ public class UserController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("signin")]
+    [HttpPost("sign-in")]
     public async Task<IActionResult> SignInUser([FromBody] SignInDTO query)
     {
         var result = await _mediator.Send(new SignIn(query));

@@ -47,7 +47,7 @@ public class PostController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("postlite")]
+    [HttpGet("post-lite")]
     public async Task<IActionResult> GetPostLiteById(int id)
     {
         var result = await _mediator.Send(new GetPostLiteById(id));
@@ -55,7 +55,7 @@ public class PostController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("postlitelist")]
+    [HttpGet("post-lite-list")]
     public async Task<IActionResult> GetPostLiteList()
     {
         var result = await _mediator.Send(new GetPostLiteList());
@@ -63,7 +63,7 @@ public class PostController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("pooloptionlist")]
+    [HttpGet("pool-option-list")]
     public async Task<IActionResult> GetPoolOptionList(int id)
     {
         var result = await _mediator.Send(new PoolOptionsForVoteByPostId(id));
@@ -72,7 +72,7 @@ public class PostController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("postmenu")]
+    [HttpGet("post-menu")]
     public async Task<IActionResult> GetPostListTable([FromQuery] PaginationRequestDTO paginationRequestDTO)
     {
         var result = await _mediator.Send(new GetTableOfPostList(paginationRequestDTO));

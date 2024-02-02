@@ -10,5 +10,13 @@ public interface IApplicationDbContext
     DbSet<Post> Posts { get; }
     DbSet<PoolOption> PoolOptions { get; }
     DbSet<Vote> Votes { get; }
+    DbSet<Education> Educations { get; }
+    DbSet<Job> Jobs { get; }
+    DbSet<Hobby> Hobbies { get; }
+    DbSet<Country> Countries { get; }
+    DbSet<Profile> Profiles { get; }
+    DbSet<ProfileJob> ProfileJobs { get; }
+    DbSet<ProfileHobby> ProfileHobbies { get; }
+    DbSet<ProfileEducation> ProfileEducations { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

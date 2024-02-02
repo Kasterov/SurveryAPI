@@ -27,7 +27,7 @@ public class VoteController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("votelist")]
+    [HttpPost("vote-list")]
     public async Task<IActionResult> CreateVoteList(CreateVoteListDTO command)
     {
         var result = await _mediator.Send(new CreateVoteList(command));

@@ -13,6 +13,11 @@ using Infrastructure.Repositories;
 using Application.MediatR.Users.Commands;
 using Application.Abstractions.Posts;
 using Application.Abstractions.Votes;
+using Application.Abstractions.Profiles;
+using Application.Abstractions.Jobs;
+using Application.Abstractions.Educations;
+using Application.Abstractions.Countries;
+using Application.Abstractions.Hobbies;
 
 namespace WebApi.Configuration;
 
@@ -25,6 +30,11 @@ public static class ConfigureExstension
         builder.Services.AddScoped<IVoteRepository, VoteRepository>();
         builder.Services.AddScoped<IPostRepository, PostRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+        builder.Services.AddScoped<IJobRepository, JobRepository>();
+        builder.Services.AddScoped<IEducationRepository, EducationRepository>();
+        builder.Services.AddScoped<ICountryRepository, CountryRepository>();
+        builder.Services.AddScoped<IHobbyRepository, HobbyRepository>();
 
         builder.Services
             .AddApplication()

@@ -18,6 +18,8 @@ public class ProfileToUpdateDTO : BaseDTO
     public Relationship Relationship { get; set; }
     public SallaryGrade Sallary { get; set; }
     public string? Bio { get; set; }
+    public int? FileEntityId { get; set; }
+    public string FileEntityLink { get; set; }
     public UploadCountryDTO Country { get; set; }
     public List<UploadJobDTO> Jobs { get; set; }
     public List<UploadHobbyDTO> Hobbies { get; set; }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240201170009_Initial")]
+    [Migration("20240208091352_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -360,6 +360,41 @@ namespace Infrastructure.Migrations
                             LastModified = new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             Name = "Mechanical Engineering"
                         });
+                });
+
+            modelBuilder.Entity("Domain.Entities.FileEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<byte[]>("Bytes")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Expression")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FileEntities");
                 });
 
             modelBuilder.Entity("Domain.Entities.Hobby", b =>
@@ -900,6 +935,9 @@ namespace Infrastructure.Migrations
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<int?>("FileEntityId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Gender")
                         .HasColumnType("int");
 
@@ -917,8 +955,11 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CountryId")
-                        .IsUnique();
+                    b.HasIndex("CountryId");
+
+                    b.HasIndex("FileEntityId")
+                        .IsUnique()
+                        .HasFilter("[FileEntityId] IS NOT NULL");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -1063,10 +1104,15 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Profile", b =>
                 {
                     b.HasOne("Domain.Entities.Country", "Country")
-                        .WithOne("Profile")
-                        .HasForeignKey("Domain.Entities.Profile", "CountryId")
+                        .WithMany("Profiles")
+                        .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Domain.Entities.FileEntity", "FileEntity")
+                        .WithOne("Profile")
+                        .HasForeignKey("Domain.Entities.Profile", "FileEntityId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Domain.Entities.User", "User")
                         .WithOne("Profile")
@@ -1075,6 +1121,8 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Country");
+
+                    b.Navigation("FileEntity");
 
                     b.Navigation("User");
                 });
@@ -1157,13 +1205,18 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Country", b =>
                 {
-                    b.Navigation("Profile")
-                        .IsRequired();
+                    b.Navigation("Profiles");
                 });
 
             modelBuilder.Entity("Domain.Entities.Education", b =>
                 {
                     b.Navigation("ProfileEducations");
+                });
+
+            modelBuilder.Entity("Domain.Entities.FileEntity", b =>
+                {
+                    b.Navigation("Profile")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entities.Hobby", b =>

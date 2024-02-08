@@ -5,6 +5,7 @@ using Application.DTOs.Votes;
 using AutoMapper;
 using MediatR;
 using System.Collections.Generic;
+using static System.Net.WebRequestMethods;
 
 namespace Application.MediatR.Posts.Queries;
 
@@ -28,6 +29,11 @@ public class GetPostLiteListHandler : IRequestHandler<GetPostLiteList, IEnumerab
 
         foreach (var post in postList)
         {
+            if (post.Author.AvatarId is not null)
+            {
+                post.Author.AvatarLink = $"https://localhost:7213/File/file-content?id={post.Author.AvatarId}";
+            }
+
             post.TotalCount = post.Votes.Sum(vote => vote.Count);
         }
 

@@ -18,6 +18,7 @@ using Application.Abstractions.Jobs;
 using Application.Abstractions.Educations;
 using Application.Abstractions.Countries;
 using Application.Abstractions.Hobbies;
+using Application.Abstractions.Files;
 
 namespace WebApi.Configuration;
 
@@ -35,6 +36,7 @@ public static class ConfigureExstension
         builder.Services.AddScoped<IEducationRepository, EducationRepository>();
         builder.Services.AddScoped<ICountryRepository, CountryRepository>();
         builder.Services.AddScoped<IHobbyRepository, HobbyRepository>();
+        builder.Services.AddScoped<IFileEntityRepository, FileEntityRepository>();
 
         builder.Services
             .AddApplication()

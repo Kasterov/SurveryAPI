@@ -59,6 +59,7 @@ public class PostRepository : IPostRepository
                 Author = new AuthorDTO()
                 {
                     Name = post.Author.Name,
+                    AvatarId = post.Author.Profile.FileEntityId,
                     Id = post.Author.Id,
                 },
                 Votes = post.Options.Select(o => new VoteLiteDTO()

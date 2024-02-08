@@ -13,6 +13,7 @@ public interface IApplicationDbContext
     DbSet<Education> Educations { get; }
     DbSet<Job> Jobs { get; }
     DbSet<Hobby> Hobbies { get; }
+    DbSet<FileEntity> FileEntities { get; }
     DbSet<Country> Countries { get; }
     DbSet<Profile> Profiles { get; }
     DbSet<ProfileJob> ProfileJobs { get; }

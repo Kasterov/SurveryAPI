@@ -26,6 +26,11 @@ public class GetProfileByUserIdHandler : IRequestHandler<GetProfileByUserId, Pro
     {
         var profile = await _repository.GetProfileByUserId(Convert.ToInt32(_identity.UserId));
 
+        if (profile.FileEntityId is not null)
+        {
+            profile.FileEntityLink = $"https://localhost:7213/File/file-content?id={profile.FileEntityId}";
+        }
+
         return profile;
     }
 }

@@ -1,4 +1,5 @@
-﻿using Application.DTOs.ProfileEducations;
+﻿using Application.DTOs.FileEntities;
+using Application.DTOs.ProfileEducations;
 using Application.DTOs.ProfileHobbies;
 using Application.DTOs.ProfileJobs;
 using Domain.Entities;
@@ -16,6 +17,7 @@ public class ProfileUpdateDTO
     public SallaryGrade Sallary { get; set; }
     public string? Bio { get; set; }
     public int? CountryId { get; set; }
+    public UploadFileDTO? Avatar { get; set; }
     public List<CreateProfileJobDTO> Jobs { get; set; }
     public List<CreateProfileHobbyDTO> Hobbies { get; set; }
     public List<CreateProfileEducationDTO> Educations { get; set; }

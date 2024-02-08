@@ -55,6 +55,7 @@ public class ProfileRepository : IProfileRepository
         existProfile.Relationship = profile.Relationship;
         existProfile.CountryId = profile.CountryId;
         existProfile.Bio = profile.Bio;
+        existProfile.FileEntity = profile.FileEntity;
 
         existProfile.Educations = profile.Educations;
         existProfile.Jobs = profile.Jobs;
@@ -109,6 +110,7 @@ public class ProfileRepository : IProfileRepository
             Bio = profile.Bio,
             Sallary = profile.Sallary,
             Gender = profile.Gender,
+            FileEntityId = profile.FileEntityId,
             Country = new UploadCountryDTO()
             {
                 Id = profile.Country.Id,

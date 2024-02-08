@@ -47,6 +47,24 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FileEntities",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Bytes = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    ContentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Expression = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastModified = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FileEntities", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Hobbies",
                 columns: table => new
                 {
@@ -133,6 +151,7 @@ namespace Infrastructure.Migrations
                     Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CountryId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
+                    FileEntityId = table.Column<int>(type: "int", nullable: true),
                     Created = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     LastModified = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
@@ -145,6 +164,12 @@ namespace Infrastructure.Migrations
                         principalTable: "Countries",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Profiles_FileEntities_FileEntityId",
+                        column: x => x.FileEntityId,
+                        principalTable: "FileEntities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Profiles_Users_UserId",
                         column: x => x.UserId,
@@ -413,8 +438,14 @@ namespace Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Profiles_CountryId",
                 table: "Profiles",
-                column: "CountryId",
-                unique: true);
+                column: "CountryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Profiles_FileEntityId",
+                table: "Profiles",
+                column: "FileEntityId",
+                unique: true,
+                filter: "[FileEntityId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Profiles_UserId",
@@ -465,6 +496,9 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Countries");
+
+            migrationBuilder.DropTable(
+                name: "FileEntities");
 
             migrationBuilder.DropTable(
                 name: "Posts");

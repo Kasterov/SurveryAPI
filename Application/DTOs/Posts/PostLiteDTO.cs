@@ -16,5 +16,6 @@ public class PostLiteDTO : BaseDTO
 public class AuthorDTO : BaseDTO
 {
     public string Name { get; set;}
-
+    public string AvatarLink { get; set; }
+    public int? AvatarId { get; set; }
 }

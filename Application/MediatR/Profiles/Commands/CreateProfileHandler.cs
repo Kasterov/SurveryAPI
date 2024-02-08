@@ -31,6 +31,20 @@ public class CreateProfileHandler : IRequestHandler<CreateProfile, ProfileDTO>
 
     public async Task<ProfileDTO> Handle(CreateProfile request, CancellationToken cancellationToken)
     {
+        FileEntity? file = null;
+
+        if (request.dto.Avatar is not null)
+        {
+            file = new()
+            {
+                Id = request.dto.Avatar.Id ?? 0,
+                ContentType = request.dto.Avatar.ContentType,
+                Bytes = System.Convert.FromBase64String(request.dto.Avatar.Base64),
+                Name = request.dto.Avatar.Name,
+                Expression = request.dto.Avatar.Expression,
+            };
+        }
+
         var profile = new Domain.Entities.Profile()
         {
             Gender = request.dto.Gender,
@@ -38,9 +52,10 @@ public class CreateProfileHandler : IRequestHandler<CreateProfile, ProfileDTO>
             Sallary = request.dto.Sallary,
             CountryId = request.dto.CountryId,
             Bio = request.dto.Bio,
+            FileEntity = file,
             UserId = Convert.ToInt32(_iIdentity.UserId),
-            User = new User() 
-            { 
+            User = new User()
+            {
                 Name = request.dto.Name,
                 Email = request.dto.Email,
                 DateOfBirth = request.dto.DateOfBirth

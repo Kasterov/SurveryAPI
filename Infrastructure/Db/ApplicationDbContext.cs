@@ -19,6 +19,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public virtual DbSet<Post> Posts => Set<Post>();
     public virtual DbSet<PoolOption> PoolOptions => Set<PoolOption>();
     public virtual DbSet<Vote> Votes => Set<Vote>();
+    public virtual DbSet<FileEntity> FileEntities => Set<FileEntity>();
     public virtual DbSet<Education> Educations => Set<Education>();
     public virtual DbSet<Job> Jobs => Set<Job>();
     public virtual DbSet<Hobby> Hobbies => Set<Hobby>();
@@ -114,23 +115,34 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         modelBuilder.Entity<Profile>()
             .HasKey(x => x.Id);
 
-        modelBuilder.Entity<Country>()
-            .HasOne(p => p.Profile)
-            .WithOne(u => u.Country)
-            .HasForeignKey<Profile>(p => p.CountryId)
-            .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Profile>()
+            .HasOne(p => p.Country)
+            .WithMany(c => c.Profiles);
 
         modelBuilder.Entity<User>()
             .HasOne(u => u.Profile)
             .WithOne(u => u.User)
             .HasForeignKey<Profile>(u => u.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<FileEntity>()
+            .HasOne(u => u.Profile)
+            .WithOne(u => u.FileEntity)
+            .HasForeignKey<Profile>(u => u.FileEntityId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     private void ConfigureCountry(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Country>()
             .HasKey(x => x.Id);
+
+        modelBuilder.Entity<Country>()
+            .HasMany(p => p.Profiles)
+            .WithOne(u => u.Country)
+            .HasForeignKey(p => p.CountryId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 
     private void ConfigureHobby(ModelBuilder modelBuilder)

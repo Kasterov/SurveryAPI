@@ -63,7 +63,9 @@ public class GetTableOfPostListHandler : IRequestHandler<GetTableOfPostList, Pag
                 Title = post.Title,
                 Status = post.Status,
                 Votes = voteCount,
-                People = peopleCount
+                People = peopleCount,
+                Created = post.Created,
+                LastModified = post.LastModified
             };
 
             postTableDTOList.Add(postTableDTO);

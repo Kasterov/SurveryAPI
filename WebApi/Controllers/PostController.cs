@@ -56,9 +56,9 @@ public class PostController : ControllerBase
     }
 
     [HttpGet("post-lite-list")]
-    public async Task<IActionResult> GetPostLiteList()
+    public async Task<IActionResult> GetPostLiteList([FromQuery] PaginationRequestDTO dto)
     {
-        var result = await _mediator.Send(new GetPostLiteList());
+        var result = await _mediator.Send(new GetPostLiteList(dto));
 
         return Ok(result);
     }

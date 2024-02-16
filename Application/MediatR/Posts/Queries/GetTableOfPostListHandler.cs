@@ -1,12 +1,11 @@
 ﻿using Application.Abstractions.Posts;
 using Application.Abstractions.Users;
+using Application.DTOs.Common;
 using Application.DTOs.General;
 using Application.DTOs.Posts;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace Application.MediatR.Posts.Queries;

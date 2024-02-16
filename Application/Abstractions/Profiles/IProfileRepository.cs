@@ -7,5 +7,5 @@ public interface IProfileRepository
 {
     public Task<Profile> AddOrUpdate(Profile profile);
 
-    public Task<ProfileToUpdateDTO?> GetProfileByUserId(int userId);
+    public Task<Profile?> GetProfileByUserId(int userId);
 }

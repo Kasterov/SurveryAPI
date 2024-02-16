@@ -18,7 +18,7 @@ public class JWTGeneratorService : IJWTGeneratorService
     }
     public string GenerateJwtToken(User user)
     {
-        List<Claim> claims = new List<Claim>
+        List<Claim> claims = new()
         {
             new (JwtRegisteredClaimNames.Sid, user.Id.ToString()),
             new (JwtRegisteredClaimNames.Name, user.Name)
@@ -28,7 +28,7 @@ public class JWTGeneratorService : IJWTGeneratorService
             issuer: _builder.GetSection("Jwt:Issuer").Value,
             audience: _builder.GetSection("Jwt:Audience").Value,
             claims: claims,
-            expires: DateTime.Now.AddMinutes(15),
+            expires: DateTime.Now.AddDays(7),
             notBefore: DateTime.Now,
             signingCredentials: new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_builder.GetSection("Jwt:Key").Value)),

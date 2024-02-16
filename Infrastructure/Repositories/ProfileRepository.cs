@@ -11,6 +11,7 @@ using Application.DTOs.Profiles;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Profile = Domain.Entities.Profile;
 
 namespace Infrastructure.Repositories;
 
@@ -72,7 +73,7 @@ public class ProfileRepository : IProfileRepository
 
     }
 
-    public async Task<ProfileToUpdateDTO?> GetProfileByUserId(int userId)
+    public async Task<Profile?> GetProfileByUserId(int userId)
     {
         var profile = await _context.Profiles
             .Include(p => p.Country)
@@ -85,55 +86,6 @@ public class ProfileRepository : IProfileRepository
             .ThenInclude(p => p.Hobby)
             .FirstOrDefaultAsync(p => p.UserId == userId);
 
-        if (profile is null)
-        {
-            User user = await _context.Users.FirstAsync(u => u.Id == userId);
-
-            ProfileToUpdateDTO profileUserDTO = new()
-            {
-                Name = user.Name,
-                Email = user.Email,
-                DateOfBirth = user.DateOfBirth,
-            };
-
-            return profileUserDTO;
-        }
-
-        ProfileToUpdateDTO profileUpdateDTO = new()
-        {
-            Id = profile.Id,
-            LastModified = profile.LastModified,
-            Created = profile.Created,
-            Name = profile.User.Name,
-            Email = profile.User.Email,
-            DateOfBirth = profile.User.DateOfBirth,
-            Bio = profile.Bio,
-            Sallary = profile.Sallary,
-            Gender = profile.Gender,
-            FileEntityId = profile.FileEntityId,
-            Country = new UploadCountryDTO()
-            {
-                Id = profile.Country.Id,
-                Name = profile.Country.Name,
-            },
-            Relationship = profile.Relationship,
-            Educations = profile.Educations.Select(e => new UploadEducationDTO()
-            {
-                Id = e.EducationId,
-                Name = e.Education.Name,
-            }).ToList(),
-            Jobs = profile.Jobs.Select(c => new UploadJobDTO()
-            {
-                Id = c.JobId,
-                Name = c.Job.Name,
-            }).ToList(),
-            Hobbies = profile.Hobbies.Select(h => new UploadHobbyDTO()
-            {
-                Id = h.HobbyId,
-                Name = h.Hobby.Name,
-            }).ToList(),
-        };
-
-        return profileUpdateDTO;
+        return profile;
     }
 }

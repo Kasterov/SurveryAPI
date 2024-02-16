@@ -42,6 +42,7 @@ public static class ConfigureExstension
             .AddApplication()
             .AddInfrastructure(builder.Configuration);
 
-        builder.Services.AddAutoMapper(typeof(MappingProfile));
+        var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+        builder.Services.AddAutoMapper(currentAssemblies);
     }
 }

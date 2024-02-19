@@ -1,10 +1,6 @@
 ﻿using Application.Abstractions.Jobs;
-using Application.Abstractions.Posts;
 using Application.DTOs.Jobs;
-using Application.DTOs.Posts;
-using Application.DTOs.Votes;
 using AutoMapper;
-using Domain.Entities;
 using MediatR;
 
 namespace Application.MediatR.Jobs.Queries;
@@ -26,11 +22,6 @@ public class GetJobListHandler : IRequestHandler<GetJobList, IEnumerable<JobDTO>
     {
         var jobList = await _repository.GetJobList();
 
-        return jobList.Select(j => new JobDTO()
-        {
-            Id = j.Id,
-            Description = j.Description,
-            Name = j.Name
-        });
+        return _mapper.Map<IEnumerable<JobDTO>>(jobList);
     }
 }

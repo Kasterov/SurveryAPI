@@ -1,7 +1,9 @@
 ﻿using Application.Abstractions.Common;
+using Application.Abstractions.Files;
 using Application.Abstractions.Users;
 using Infrastructure.Db;
 using Infrastructure.Interceptors;
+using Infrastructure.Services.Media;
 using Infrastructure.Services.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +20,7 @@ public static class DependencyInjection
         var connectionString = configuration.GetConnectionString("DefualtConnection");
 
         services.AddScoped<IVerifyPasswordService, VerifyPasswordService>();
+        services.AddScoped<IMediaLinkGeneratorService, MediaLinkGeneratorService>();
         services.AddScoped<IJWTGeneratorService, JWTGeneratorService>();
         services.AddScoped<IIdentity, UserIdentity>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

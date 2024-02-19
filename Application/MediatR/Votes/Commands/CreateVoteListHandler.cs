@@ -4,6 +4,7 @@ using Application.DTOs.Votes;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.MediatR.Votes.Commands;
 
@@ -27,10 +28,12 @@ public class CreateVoteListHandler : IRequestHandler<CreateVoteList, IEnumerable
 
     public async Task<IEnumerable<VoteDTO>> Handle(CreateVoteList request, CancellationToken cancellationToken)
     {
+        int userId = Convert.ToInt32(_identity.UserId);
+
         var voteList = request.dto.VoteIdList.Select(vote => new Vote()
         {
             PoolOptionId = vote,
-            UserId = Convert.ToInt32(_identity.UserId)
+            UserId = userId
         });
 
         var entities = await _repository.AddList(voteList);

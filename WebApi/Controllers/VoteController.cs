@@ -1,7 +1,4 @@
-﻿using Application.DTOs.Posts;
-using Application.DTOs.Votes;
-using Application.MediatR.Posts.Commands;
-using Application.MediatR.Posts.Queries;
+﻿using Application.DTOs.Votes;
 using Application.MediatR.Votes.Commands;
 using Application.MediatR.Votes.Queries;
 using MediatR;
@@ -35,14 +32,6 @@ public class VoteController : ControllerBase
         return Ok(result);
     }
 
-    //[HttpGet("assignments")]
-    //public async Task<IActionResult> GetAllAssignments([FromQuery] GetAllAssignments query)
-    //{
-    //    var result = await _mediator.Send(query);
-
-    //    return Ok(result);
-    //}
-
     [HttpGet("vote")]
     public async Task<IActionResult> GetVoteById(int id)
     {
@@ -50,14 +39,6 @@ public class VoteController : ControllerBase
 
         return Ok(result);
     }
-
-    //[HttpPut("assignment")]
-    //public async Task<IActionResult> EditAssignment([FromBody] EditAssignment command)
-    //{
-    //    var result = await _mediator.Send(command);
-
-    //    return Ok(result);
-    //}
 
     [HttpDelete("vote")]
     public async Task<IActionResult> DeleteVoteById([FromQuery] DeleteVoteById command)

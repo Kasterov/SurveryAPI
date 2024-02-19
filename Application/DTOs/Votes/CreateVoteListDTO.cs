@@ -2,6 +2,6 @@
 
 public class CreateVoteListDTO
 {
-    public int UserId { get; set; }
+    public int PostId { get; set; }
     public IEnumerable<int> VoteIdList { get; set; }
 }

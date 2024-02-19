@@ -116,6 +116,15 @@ public class PostRepository : IPostRepository
         return posts;
     }
 
+    public async Task<bool?> PossibleToRevote(int postId)
+    {
+        var possibleToRevote = await _context.Posts
+            .Select(p => new { p.Id, p.IsRevotable })
+            .FirstOrDefaultAsync(p => p.Id == postId);
+
+        return possibleToRevote?.IsRevotable;
+    }
+
     public Task<Post> Update(Post assignment)
     {
         throw new NotImplementedException();

@@ -13,7 +13,7 @@ public class PostLiteDTO : BaseDTO
     public IEnumerable<VoteLiteDTO> Votes { get; set; }
 }
 
-public class AuthorDTO : BaseDTO
+public class AuthorDTO : BaseAuditableDTO
 {
     public string Name { get; set;}
     public string AvatarLink { get; set; }

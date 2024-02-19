@@ -10,5 +10,6 @@ public class CreatePostDTO
     public string? Description { get; set; }
     public int AuthorId { get; set; }
     public bool IsMultiple { get; set; }
+    public bool IsRevotable { get; set; }
     public IEnumerable<PoolOptionCreateDTO> Options { get; set; }
 }

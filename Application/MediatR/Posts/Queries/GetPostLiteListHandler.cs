@@ -1,4 +1,5 @@
-﻿using Application.Abstractions.Posts;
+﻿using Application.Abstractions.Files;
+using Application.Abstractions.Posts;
 using Application.DTOs.Common;
 using Application.DTOs.General;
 using Application.DTOs.Posts;
@@ -15,12 +16,17 @@ public record GetPostLiteList(PaginationRequestDTO PaginationRequestDTO) : IRequ
 public class GetPostLiteListHandler : IRequestHandler<GetPostLiteList, PaginationResponseDTO<PostLiteDTO>>
 {
     private readonly IPostRepository _repository;
+    private readonly IMediaLinkGeneratorService _mediaLinkGeneratorService;
     private readonly IMapper _mapper;
 
-    public GetPostLiteListHandler(IPostRepository repository, IMapper mapper)
+    public GetPostLiteListHandler(
+        IPostRepository repository,
+        IMapper mapper,
+        IMediaLinkGeneratorService mediaLinkGeneratorService)
     {
         _repository = repository;
         _mapper = mapper;
+        _mediaLinkGeneratorService = mediaLinkGeneratorService;
     }
 
     public async Task<PaginationResponseDTO<PostLiteDTO>> Handle(GetPostLiteList request, CancellationToken cancellationToken)
@@ -55,7 +61,7 @@ public class GetPostLiteListHandler : IRequestHandler<GetPostLiteList, Paginatio
         {
             if (post.Author.AvatarId is not null)
             {
-                post.Author.AvatarLink = $"https://localhost:7213/File/file-content?id={post.Author.AvatarId}";
+                post.Author.AvatarLink = _mediaLinkGeneratorService.GenerateMediaLink(post.Author.AvatarId);
             }
 
             post.TotalCount = post.Votes.Sum(vote => vote.Count);

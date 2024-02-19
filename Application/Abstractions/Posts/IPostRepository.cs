@@ -10,6 +10,8 @@ public interface IPostRepository
 
     public Task<IEnumerable<PostTableFullDTO>> GetTablePostList(int userId);
 
+    public Task<bool?> PossibleToRevote(int postId);
+
     public Task<Post> GetById(int id);
 
     public Task<Post> Add(Post post);

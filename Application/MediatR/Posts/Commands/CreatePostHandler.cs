@@ -37,6 +37,7 @@ public class CreatePostHandler : IRequestHandler<CreatePost, PostDTO>
             Description = dto.Description,
             AuthorId = Convert.ToInt32(_identity.UserId),
             IsMultiple = dto.IsMultiple,
+            IsRevotable = dto.IsRevotable,
             Options = dto.Options.Select(opt => new PoolOption()
             {
                 Title = opt.Title

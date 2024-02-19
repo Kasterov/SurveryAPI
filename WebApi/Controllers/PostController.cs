@@ -1,14 +1,11 @@
 ﻿using Application.DTOs.General;
 using Application.DTOs.Posts;
-using Application.DTOs.Users;
 using Application.MediatR.Posts.Commands;
 using Application.MediatR.Posts.Queries;
-using Application.MediatR.Users.Commands;
-using Application.MediatR.Users.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using System.Diagnostics;
 
 namespace WebApi.Controllers;
 
@@ -30,14 +27,6 @@ public class PostController : ControllerBase
 
         return Ok(result);
     }
-
-    //[HttpGet("assignments")]
-    //public async Task<IActionResult> GetAllAssignments([FromQuery] GetAllAssignments query)
-    //{
-    //    var result = await _mediator.Send(query);
-
-    //    return Ok(result);
-    //}
 
     [HttpGet("post")]
     public async Task<IActionResult> GetPostById(int id)
@@ -79,14 +68,6 @@ public class PostController : ControllerBase
 
         return Ok(result);
     }
-
-    //[HttpPut("assignment")]
-    //public async Task<IActionResult> EditAssignment([FromBody] EditAssignment command)
-    //{
-    //    var result = await _mediator.Send(command);
-
-    //    return Ok(result);
-    //}
 
     [Authorize]
     [HttpDelete("post")]

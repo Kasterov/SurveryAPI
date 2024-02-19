@@ -2,10 +2,8 @@
 
 namespace Application.DTOs.Common;
 
-public class BaseDTO
+public class BaseDTO : BaseAuditableDTO
 {
-    public int Id { get; set; } 
-
     public DateTimeOffset Created { get; set; }
 
     public DateTimeOffset LastModified { get; set; }

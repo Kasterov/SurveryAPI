@@ -1,12 +1,9 @@
-﻿using Application.Abstractions.Assignments;
-using Application.Abstractions.Users;
+﻿using Application.Abstractions.Users;
 using Application.DTOs.Users;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
 using System.Security.Cryptography;
-using System.Xml.Linq;
-
 namespace Application.MediatR.Users.Commands;
 
 public record CreateUser(CreateUserDTO dto) : IRequest<UserDTO>;

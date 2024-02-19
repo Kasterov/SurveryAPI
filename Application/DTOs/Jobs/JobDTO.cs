@@ -2,7 +2,7 @@
 
 namespace Application.DTOs.Jobs;
 
-public class JobDTO : BaseDTO
+public class JobDTO : BaseAuditableDTO
 {
     public string Name { get; set; }
     public string Description { get; set; }

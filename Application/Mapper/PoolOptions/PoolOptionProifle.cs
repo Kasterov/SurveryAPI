@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.PoolOptions;
+using Application.DTOs.Posts;
 using Domain.Entities;
 
 namespace Application.Mapper.PoolOptions;
@@ -9,6 +10,6 @@ public class PoolOptionProifle : AutoMapper.Profile
     {
         CreateMap<PoolOptionDTO, PoolOption>().ReverseMap();
         CreateMap<PoolOption, PoolOptionBaseDTO>().ReverseMap();
-        CreateMap<Post, PoolOptionsForVoteDTO>().ReverseMap();
+        CreateMap<PoolOption, PoolOptionEditDTO>().ReverseMap();
     }
 }

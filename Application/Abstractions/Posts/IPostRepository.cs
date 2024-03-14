@@ -12,8 +12,9 @@ public interface IPostRepository
 
     public Task<bool?> PossibleToRevote(int postId);
 
+    public Task<PostFullDTO?> GetPostFullDTO(int id);
     public Task<Post> GetById(int id);
-
+    public Task<PostEditDTO> GetPostEditById(int id);
     public Task<Post> Add(Post post);
 
     public Task<Post> Update(Post post);

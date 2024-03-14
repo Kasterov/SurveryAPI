@@ -88,4 +88,45 @@ public class ProfileRepository : IProfileRepository
 
         return profile;
     }
+
+    public async Task<ProfileViewDTO> GetProfileViewDTO(int userId)
+    {
+        var profile = await _context.Users
+            .Where(x => x.Id == userId)
+            .Select(u => new ProfileViewDTO
+            {
+                FileEntityId = u.Profile.FileEntityId,
+                Name = u.Name,
+                Bio = u.Profile.Bio,
+                RegistrationDate = u.Created,
+                Country = new CountryDTO()
+                {
+                    Id = u.Profile.Country.Id,
+                    CountryCode = u.Profile.Country.CountryCode,
+                    Name = u.Profile.Country.Name
+                },
+                Educations = u.Profile.Educations.Select(p => new EducationDTO()
+                {
+                    Id = p.EducationId,
+                    Name = p.Education.Name,
+                    Description = p.Education.Description
+                }),
+                Jobs = u.Profile.Jobs.Select(p => new JobDTO()
+                {
+                    Id = p.Job.Id,
+                    Name = p.Job.Name,
+                    Description = p.Job.Description
+                }),
+                Hobbies = u.Profile.Hobbies.Select(p => new HobbyDTO()
+                {
+                    Id = p.Hobby.Id,
+                    Name = p.Hobby.Name,
+                    Description = p.Hobby.Description
+                })
+            })
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        
+        return profile;
+    }
 }

@@ -31,9 +31,9 @@ public class GetPostLiteListHandler : IRequestHandler<GetPostLiteList, Paginatio
 
     public async Task<PaginationResponseDTO<PostLiteDTO>> Handle(GetPostLiteList request, CancellationToken cancellationToken)
     {
-        string searchQuery = request.PaginationRequestDTO.SearchQuery;
-        string sortColumn = request.PaginationRequestDTO.SortColumn;
-        string sortOrder = request.PaginationRequestDTO.SortOrder;
+        string? searchQuery = request.PaginationRequestDTO.SearchQuery;
+        string?  sortColumn = request.PaginationRequestDTO.SortColumn;
+        string? sortOrder = request.PaginationRequestDTO.SortOrder;
         int page = request.PaginationRequestDTO.Page;
         int pageSize = request.PaginationRequestDTO.PageSize;
 
@@ -41,7 +41,8 @@ public class GetPostLiteListHandler : IRequestHandler<GetPostLiteList, Paginatio
 
         if (!string.IsNullOrEmpty(searchQuery))
         {
-            postList = postList.Where(post => post.Title.Contains(searchQuery)).ToList();
+            postList = postList.Where(post => post.Title.ToLower().Contains(searchQuery.ToLower()) 
+            || post.Author.Name.ToLower().Contains(searchQuery.ToLower())).ToList();
         }
 
         Expression<Func<PostLiteDTO, object>> keySortSelector = sortColumn?.ToLower() switch

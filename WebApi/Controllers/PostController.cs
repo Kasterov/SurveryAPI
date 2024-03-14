@@ -36,10 +36,10 @@ public class PostController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("post-lite")]
-    public async Task<IActionResult> GetPostLiteById(int id)
+    [HttpGet("post-full")]
+    public async Task<IActionResult> GetPostFull(int id)
     {
-        var result = await _mediator.Send(new GetPostLiteById(id));
+        var result = await _mediator.Send(new GetPostFull(id));
 
         return Ok(result);
     }
@@ -65,6 +65,15 @@ public class PostController : ControllerBase
     public async Task<IActionResult> GetPostListTable([FromQuery] PaginationRequestDTO paginationRequestDTO)
     {
         var result = await _mediator.Send(new GetTableOfPostList(paginationRequestDTO));
+
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpPut("post")]
+    public async Task<IActionResult> EditPost(PostEditDTO postEditDTO)
+    {
+        var result = await _mediator.Send(new EditPost(postEditDTO));
 
         return Ok(result);
     }

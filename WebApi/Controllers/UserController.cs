@@ -1,4 +1,5 @@
 using Application.DTOs.Users;
+using Application.MediatR.Profiles.Queries;
 using Application.MediatR.Users.Commands;
 using Application.MediatR.Users.Queries;
 using MediatR;
@@ -32,35 +33,11 @@ public class UserController : ControllerBase
         return Ok(result);
     }
 
-    //[HttpGet("assignments")]
-    //public async Task<IActionResult> GetAllAssignments([FromQuery] GetAllAssignments query)
-    //{
-    //    var result = await _mediator.Send(query);
-
-    //    return Ok(result);
-    //}
-
-    [HttpGet("user")]
-    public async Task<IActionResult> GetUserById([FromQuery] GetUserById query)
+    [HttpGet("profile-view")]
+    public async Task<IActionResult> GetProfileViewData(int id)
     {
-        var result = await _mediator.Send(query);
+        var result = await _mediator.Send(new GetProfileViewData(id));
 
         return Ok(result);
     }
-
-    //[HttpPut("assignment")]
-    //public async Task<IActionResult> EditAssignment([FromBody] EditAssignment command)
-    //{
-    //    var result = await _mediator.Send(command);
-
-    //    return Ok(result);
-    //}
-
-    //[HttpDelete("assignment")]
-    //public async Task<IActionResult> DeleteAssignment([FromQuery] DeleteAssignment command)
-    //{
-    //    var result = await _mediator.Send(command);
-
-    //    return Ok(result);
-    //}
 }

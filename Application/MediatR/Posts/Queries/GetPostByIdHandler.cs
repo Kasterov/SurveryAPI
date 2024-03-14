@@ -7,24 +7,21 @@ using MediatR;
 
 namespace Application.MediatR.Posts.Queries;
 
-public record GetPostById(int Id) : IRequest<PostDTO>;
+public record GetPostById(int Id) : IRequest<PostEditDTO>;
 
-public class GetPostByIdHandler : IRequestHandler<GetPostById, PostDTO>
+public class GetPostByIdHandler : IRequestHandler<GetPostById, PostEditDTO>
 {
     private readonly IPostRepository _repository;
-    private readonly IMapper _mapper;
 
-    public GetPostByIdHandler(IPostRepository repository, IMapper mapper)
+    public GetPostByIdHandler(IPostRepository repository)
     {
         _repository = repository;
-        _mapper = mapper;
     }
 
-    public async Task<PostDTO> Handle(GetPostById request, CancellationToken cancellationToken)
+    public async Task<PostEditDTO> Handle(GetPostById request, CancellationToken cancellationToken)
     {
-        var post = await _repository.GetById(request.Id);
-        var result = _mapper.Map<PostDTO>(post);
+        var postEdit = await _repository.GetPostEditById(request.Id);
 
-        return result;
+        return postEdit;
     }
 }

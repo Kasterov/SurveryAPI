@@ -1,9 +1,9 @@
 ﻿namespace Domain.Entities;
 
-public class ProfileEducation
+public class UserEducation
 {
-    public int ProfileId { get; set; }
-    public Profile Profile { get; set; }
+    public int UserId { get; set; }
+    public User User { get; set; }
 
     public int EducationId { get; set; }
     public Education Education { get; set; }

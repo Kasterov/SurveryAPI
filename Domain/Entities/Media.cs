@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities;
 
-public class FileEntity : BaseAuditableEntity
+public class Media : BaseAuditableEntity
 {
     public string Name { get; set; }
     public byte[] Bytes { get; set; }
     public string ContentType { get; set; }
     public string Expression { get;set; }
-    public Profile Profile { get; set; }
+    public User User { get; set; }
 }

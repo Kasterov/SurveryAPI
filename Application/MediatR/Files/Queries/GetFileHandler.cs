@@ -11,18 +11,18 @@ using System.Threading.Tasks;
 
 namespace Application.MediatR.Files.Queries;
 
-public record GetFile(int id) : IRequest<FileEntity>;
+public record GetFile(int id) : IRequest<Media>;
 
-public class GetEducationListHandler : IRequestHandler<GetFile, FileEntity>
+public class GetEducationListHandler : IRequestHandler<GetFile, Media>
 {
-    private readonly IFileEntityRepository _repository;
+    private readonly IMediaRepository _repository;
 
-    public GetEducationListHandler(IFileEntityRepository repository)
+    public GetEducationListHandler(IMediaRepository repository)
     {
         _repository = repository;
     }
 
-    public async Task<FileEntity?> Handle(GetFile request, CancellationToken cancellationToken)
+    public async Task<Media?> Handle(GetFile request, CancellationToken cancellationToken)
     {
         var file = await _repository.GetFile(request.id);
 

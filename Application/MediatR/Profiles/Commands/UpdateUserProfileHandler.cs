@@ -1,26 +1,22 @@
 ﻿using Application.Abstractions.Posts;
-using Application.Abstractions.Profiles;
 using Application.Abstractions.Users;
 using Application.DTOs.Posts;
 using Application.DTOs.Profiles;
 using AutoMapper;
 using Domain.Entities;
-using Domain.Enums;
 using MediatR;
-using System.Security.Principal;
-using System.Xml.Linq;
 
 namespace Application.MediatR.Profiles.Commands;
 
-public record CreateProfile(ProfileUpdateDTO dto) : IRequest<ProfileDTO>;
+public record UpdateUserProfile(UserProfileUpdateDTO dto) : IRequest<bool>;
 
-public class CreateProfileHandler : IRequestHandler<CreateProfile, ProfileDTO>
+public class UpdateUserProfileHandler : IRequestHandler<UpdateUserProfile, bool>
 {
-    private readonly IProfileRepository _repository;
+    private readonly IUserRepository _repository;
     private readonly IMapper _mapper;
     private readonly Abstractions.Users.IIdentity _iIdentity;
-    public CreateProfileHandler(
-        IProfileRepository repository,
+    public UpdateUserProfileHandler(
+        IUserRepository repository,
         IMapper mapper,
         Abstractions.Users.IIdentity identity)
     {
@@ -29,9 +25,9 @@ public class CreateProfileHandler : IRequestHandler<CreateProfile, ProfileDTO>
         _iIdentity = identity;
     }
 
-    public async Task<ProfileDTO> Handle(CreateProfile request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(UpdateUserProfile request, CancellationToken cancellationToken)
     {
-        FileEntity? file = null;
+        Media? file = null;
 
         if (request.dto.Avatar is not null)
         {
@@ -45,37 +41,39 @@ public class CreateProfileHandler : IRequestHandler<CreateProfile, ProfileDTO>
             };
         }
 
-        var profile = new Domain.Entities.Profile()
+        var userProfile = new User()
         {
+            Id = Convert.ToInt32(_iIdentity.UserId),
             Gender = request.dto.Gender,
             Relationship = request.dto.Relationship,
-            Sallary = request.dto.Sallary,
+            SpendingPerMonth = request.dto.SpendingPerMonth,
             CountryId = request.dto.CountryId,
             Bio = request.dto.Bio,
-            FileEntity = file,
-            UserId = Convert.ToInt32(_iIdentity.UserId),
-            User = new User()
-            {
-                Name = request.dto.Name,
-                Email = request.dto.Email,
-                DateOfBirth = request.dto.DateOfBirth
-            },
-            Jobs = request.dto.Jobs.Select(j => new ProfileJob()
+            Avatar = file,
+            Name = request.dto.Name,
+            Email = request.dto.Email,
+            DateOfBirth = request.dto.DateOfBirth,
+            Jobs = request.dto.Jobs.Select(j => new UserJob()
             {
                 JobId = j.JobId,
             }).ToList(),
-            Hobbies = request.dto.Hobbies.Select(j => new ProfileHobby()
+            Hobbies = request.dto.Hobbies.Select(j => new UserHobby()
             {
                 HobbyId = j.HobbyId,
             }).ToList(),
-            Educations = request.dto.Educations.Select(j => new ProfileEducation()
+            Educations = request.dto.Educations.Select(j => new UserEducation()
             {
                 EducationId = j.EducationId
             }).ToList()
         };
 
-        var res = await _repository.AddOrUpdate(profile);
+        var res = await _repository.UpdateUserProfile(userProfile);
 
-        return new ProfileDTO();
+        if (res is not null)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

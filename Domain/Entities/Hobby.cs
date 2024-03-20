@@ -11,5 +11,5 @@ public class Hobby : BaseAuditableEntity
 {
     public string Name { get; set; }
     public string Description { get; set; }
-    public List<ProfileHobby> ProfileHobbies { get; set; }
+    public List<UserHobby> ProfileHobbies { get; set; }
 }

@@ -17,16 +17,16 @@ public record UploadFile(UploadFileDTO file) : IRequest<bool>;
 
 public class CreatePostHandler : IRequestHandler<UploadFile, bool>
 {
-    private readonly IFileEntityRepository _repository;
+    private readonly IMediaRepository _repository;
 
-    public CreatePostHandler(IFileEntityRepository repository)
+    public CreatePostHandler(IMediaRepository repository)
     {
         _repository = repository;
     }
 
     public async Task<bool> Handle(UploadFile request, CancellationToken cancellationToken)
     {
-        FileEntity file = new()
+        Media file = new()
         {
             ContentType = request.file.ContentType,
             Bytes = System.Convert.FromBase64String(request.file.Base64),

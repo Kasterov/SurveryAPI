@@ -7,14 +7,14 @@ using Domain.Enums;
 
 namespace Application.DTOs.Profiles;
 
-public class ProfileUpdateDTO
+public class UserProfileUpdateDTO
 {
     public string Name { get; set; }
     public string Email { get; set; }
     public DateTime DateOfBirth { get;set;}
     public Gender Gender { get; set; }
     public Relationship Relationship { get; set; }
-    public SallaryGrade Sallary { get; set; }
+    public int? SpendingPerMonth { get; set; }
     public string? Bio { get; set; }
     public int? CountryId { get; set; }
     public UploadFileDTO? Avatar { get; set; }

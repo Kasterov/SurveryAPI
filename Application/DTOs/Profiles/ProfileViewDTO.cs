@@ -8,8 +8,8 @@ namespace Application.DTOs.Profiles;
 
 public class ProfileViewDTO : BaseAuditableDTO
 {
-    public int? FileEntityId { get; set; }
-    public string FileEntityLink { get; set; }
+    public int? AvatarId { get; set; }
+    public string AvatarLink { get; set; }
     public string Name { get; set; }
     public string Bio { get; set; }
     public CountryDTO Country { get; set; }

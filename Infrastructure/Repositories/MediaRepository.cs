@@ -5,24 +5,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class FileEntityRepository : IFileEntityRepository
+public class MediaRepository : IMediaRepository
 {
     private readonly IApplicationDbContext _context;
-    public FileEntityRepository(IApplicationDbContext context)
+    public MediaRepository(IApplicationDbContext context)
     {
         _context = context;
     }
 
-    public async Task<FileEntity?> GetFile(int id)
+    public async Task<Media?> GetFile(int id)
     {
-        var res = await _context.FileEntities.FirstOrDefaultAsync(f => f.Id == id);
+        var res = await _context.Files.FirstOrDefaultAsync(f => f.Id == id);
 
         return res;
     }
 
-    public async Task<bool> UploadFile(FileEntity file)
+    public async Task<bool> UploadFile(Media file)
     {
-        var res = _context.FileEntities.Add(file);
+        var res = _context.Files.Add(file);
         await _context.SaveChangesAsync();
 
         if (res.Entity != null)

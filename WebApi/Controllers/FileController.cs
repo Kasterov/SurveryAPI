@@ -29,8 +29,6 @@ public class FileController : ControllerBase
     [HttpGet("file-content")]
     public async Task<IActionResult> GetFileAsStream(int id)
     {
-        Thread.Sleep(2000);
-
         var file = await _mediator.Send(new GetFile(id));
 
         return new FileContentResult(file.Bytes, file.ContentType);

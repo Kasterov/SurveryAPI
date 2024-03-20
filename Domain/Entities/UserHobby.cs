@@ -1,9 +1,9 @@
 ﻿namespace Domain.Entities;
 
-public class ProfileHobby
+public class UserHobby
 {
-    public int ProfileId { get; set; }
-    public Profile Profile { get; set; }
+    public int UserId { get; set; }
+    public User User { get; set; }
 
     public int HobbyId { get; set; }
     public Hobby Hobby { get; set; }

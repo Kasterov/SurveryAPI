@@ -1,5 +1,4 @@
 ﻿using Application.Abstractions.Files;
-using Application.Abstractions.Profiles;
 using Application.Abstractions.Users;
 using Application.DTOs.Countries;
 using Application.DTOs.Educations;
@@ -21,25 +20,25 @@ public record GetProfileViewData(int Id) : IRequest<ProfileViewDTO?>;
 
 public class GetProfileViewDataHandler : IRequestHandler<GetProfileViewData, ProfileViewDTO?>
 {
-    private readonly IProfileRepository _profileRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IMediaLinkGeneratorService _mediaLinkGeneratorService;
 
     public GetProfileViewDataHandler(
-        IProfileRepository profileRepository,
+        IUserRepository userRepository,
         IMapper mapper,
         IMediaLinkGeneratorService mediaLinkGeneratorService)
     {
-        _profileRepository = profileRepository;
+        _userRepository = userRepository;
         _mapper = mapper;
         _mediaLinkGeneratorService = mediaLinkGeneratorService;
     }
 
     public async Task<ProfileViewDTO?> Handle(GetProfileViewData request, CancellationToken cancellationToken)
     {
-        var profileView = await _profileRepository.GetProfileViewDTO(request.Id);
+        var profileView = await _userRepository.GetUserProfileViewDTO(request.Id);
 
-        profileView.FileEntityLink = _mediaLinkGeneratorService.GenerateMediaLink(profileView.FileEntityId);
+        profileView.AvatarLink = _mediaLinkGeneratorService.GenerateMediaLink(profileView.AvatarId);
 
         return profileView;
     }

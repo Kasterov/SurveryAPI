@@ -19,15 +19,14 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public virtual DbSet<Post> Posts => Set<Post>();
     public virtual DbSet<PoolOption> PoolOptions => Set<PoolOption>();
     public virtual DbSet<Vote> Votes => Set<Vote>();
-    public virtual DbSet<FileEntity> FileEntities => Set<FileEntity>();
+    public virtual DbSet<Media> Files => Set<Media>();
     public virtual DbSet<Education> Educations => Set<Education>();
     public virtual DbSet<Job> Jobs => Set<Job>();
     public virtual DbSet<Hobby> Hobbies => Set<Hobby>();
     public virtual DbSet<Country> Countries => Set<Country>();
-    public virtual DbSet<Profile> Profiles => Set<Profile>();
-    public virtual DbSet<ProfileJob> ProfileJobs => Set<ProfileJob>();
-    public virtual DbSet<ProfileHobby> ProfileHobbies => Set<ProfileHobby>();
-    public virtual DbSet<ProfileEducation> ProfileEducations => Set<ProfileEducation>();
+    public virtual DbSet<UserJob> ProfileJobs => Set<UserJob>();
+    public virtual DbSet<UserHobby> ProfileHobbies => Set<UserHobby>();
+    public virtual DbSet<UserEducation> ProfileEducations => Set<UserEducation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -37,7 +36,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         ConfigureUser(modelBuilder);
         ConfigureVote(modelBuilder);
         ConfigurePoolOption(modelBuilder);
-        ConfigureProfile(modelBuilder);
         ConfigureCountry(modelBuilder);
         ConfigureHobby(modelBuilder);
         ConfigureEducation(modelBuilder);
@@ -46,7 +44,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         ConfigureProfileEducation(modelBuilder);
         ConfigureProfileHobby(modelBuilder);
 
-        FillTables(modelBuilder);
+        FillProfileTables(modelBuilder);
+        FillDbMock(modelBuilder);
     }
 
     private void ConfigurePost(ModelBuilder modelBuilder)
@@ -68,6 +67,13 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         modelBuilder.Entity<User>()
             .HasKey(x => x.Id);
+
+        modelBuilder.Entity<Media>()
+            .HasOne(u => u.User)
+            .WithOne(u => u.Avatar)
+            .HasForeignKey<User>(u => u.AvatarId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     private void ConfigureVote(ModelBuilder modelBuilder)
@@ -110,38 +116,16 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             .OnDelete(DeleteBehavior.Cascade);
     }
 
-    private void ConfigureProfile(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Profile>()
-            .HasKey(x => x.Id);
-
-        modelBuilder.Entity<Profile>()
-            .HasOne(p => p.Country)
-            .WithMany(c => c.Profiles);
-
-        modelBuilder.Entity<User>()
-            .HasOne(u => u.Profile)
-            .WithOne(u => u.User)
-            .HasForeignKey<Profile>(u => u.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<FileEntity>()
-            .HasOne(u => u.Profile)
-            .WithOne(u => u.FileEntity)
-            .HasForeignKey<Profile>(u => u.FileEntityId)
-            .IsRequired(false)
-            .OnDelete(DeleteBehavior.Cascade);
-    }
-
     private void ConfigureCountry(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Country>()
             .HasKey(x => x.Id);
 
         modelBuilder.Entity<Country>()
-            .HasMany(p => p.Profiles)
+            .HasMany(p => p.Users)
             .WithOne(u => u.Country)
             .HasForeignKey(p => p.CountryId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
     }
 
@@ -165,15 +149,15 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     private void ConfigureProfileJob(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ProfileJob>()
-        .HasKey(u => new { u.ProfileId, u.JobId });
+        modelBuilder.Entity<UserJob>()
+        .HasKey(u => new { u.UserId, u.JobId });
 
-        modelBuilder.Entity<ProfileJob>()
-            .HasOne(u => u.Profile)
+        modelBuilder.Entity<UserJob>()
+            .HasOne(u => u.User)
             .WithMany(up => up.Jobs)
-            .HasForeignKey(u => u.ProfileId);
+            .HasForeignKey(u => u.UserId);
 
-        modelBuilder.Entity<ProfileJob>()
+        modelBuilder.Entity<UserJob>()
             .HasOne(u => u.Job)
             .WithMany(j => j.ProfileJobs)
             .HasForeignKey(u => u.JobId);
@@ -181,15 +165,15 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     private void ConfigureProfileEducation(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ProfileEducation>()
-        .HasKey(u => new { u.ProfileId, u.EducationId });
+        modelBuilder.Entity<UserEducation>()
+        .HasKey(u => new { u.UserId, u.EducationId });
 
-        modelBuilder.Entity<ProfileEducation>()
-            .HasOne(u => u.Profile)
+        modelBuilder.Entity<UserEducation>()
+            .HasOne(u => u.User)
             .WithMany(up => up.Educations)
-            .HasForeignKey(u => u.ProfileId);
+            .HasForeignKey(u => u.UserId);
 
-        modelBuilder.Entity<ProfileEducation>()
+        modelBuilder.Entity<UserEducation>()
             .HasOne(u => u.Education)
             .WithMany(j => j.ProfileEducations)
             .HasForeignKey(u => u.EducationId);
@@ -197,21 +181,21 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     private void ConfigureProfileHobby(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ProfileHobby>()
-        .HasKey(u => new { u.ProfileId, u.HobbyId });
+        modelBuilder.Entity<UserHobby>()
+        .HasKey(u => new { u.UserId, u.HobbyId });
 
-        modelBuilder.Entity<ProfileHobby>()
-            .HasOne(u => u.Profile)
+        modelBuilder.Entity<UserHobby>()
+            .HasOne(u => u.User)
             .WithMany(up => up.Hobbies)
-            .HasForeignKey(u => u.ProfileId);
+            .HasForeignKey(u => u.UserId);
 
-        modelBuilder.Entity<ProfileHobby>()
+        modelBuilder.Entity<UserHobby>()
             .HasOne(u => u.Hobby)
             .WithMany(j => j.ProfileHobbies)
             .HasForeignKey(u => u.HobbyId);
     }
 
-    private void FillTables(ModelBuilder modelBuilder)
+    private void FillProfileTables(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Country>()
             .HasData(
@@ -315,4 +299,197 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
     }
 
+    private void FillDbMock(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>()
+            .HasData(
+                new User { Id = 1, Email="kast@gmail.com", Name = "Slava", PasswordHash = new byte[0],  PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 2, Email = "kast@gmail.com", Name = "Sasha", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 3, Email = "kast@gmail.com", Name = "Andrey", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 4, Email = "kast@gmail.com", Name = "Igor", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 5, Email = "kast@gmail.com", Name = "Masha", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 6, Email = "kast@gmail.com", Name = "Ivan", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 7, Email = "kast@gmail.com", Name = "Vlad", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 8, Email = "kast@gmail.com", Name = "Anton", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 9, Email = "kast@gmail.com", Name = "Vova", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 10, Email = "kast@gmail.com", Name = "Maks", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 11, Email = "kast@gmail.com", Name = "Tolya", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 12, Email = "kast@gmail.com", Name = "Eldar", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 13, Email = "kast@gmail.com", Name = "Nastya", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 14, Email = "kast@gmail.com", Name = "Gosha", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 15, Email = "kast@gmail.com", Name = "Vera", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 16, Email = "kast@gmail.com", Name = "Nicka", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 17, Email = "kast@gmail.com", Name = "Sofia", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 18, Email = "kast@gmail.com", Name = "Dasha", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 19, Email = "kast@gmail.com", Name = "Vlada", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 20, Email = "kast@gmail.com", Name = "Egor", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now },
+                new User { Id = 21, Email = "kast@gmail.com", Name = "Dubina", PasswordHash = new byte[0], PasswordSalt = new byte[0], Created = DateTimeOffset.Now, DateOfBirth = DateTime.Now }
+            );
+
+        modelBuilder.Entity<Post>()
+            .HasData(
+                new Post { Id = 1, Title = "Як часто ви відвідуєте кінотеатри або дивитесь фільми вдома?", AuthorId = 1, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now},
+                new Post { Id = 2, Title = "Яка ваша улюблена кухня?", AuthorId = 2, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 3, Title = "Які країни ви мрієте відвідати?", AuthorId = 2, IsMultiple = true, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 4, Title = "Скільки разів на день ви їсте?", AuthorId = 3, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 5, Title = "Які з цих ігор ви вважаєте найлегендарнішими?", AuthorId = 4, IsMultiple = true, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 6, Title = "Чи вважаєте ви, що штучний інтелект захопить світ?", AuthorId = 5, IsMultiple = false, IsPrivate = false, IsRevotable = false, Created = DateTimeOffset.Now },
+                new Post { Id = 7, Title = "Скільки тривали (тривають) ващі найдовші відносини?", AuthorId = 6, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 8, Title = "Яка консоль вам подобається більше з перелічених?", AuthorId = 4, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 9, Title = "Скільки зірок на прапорі США?", AuthorId = 21, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 10, Title = "На яку оцінку ви вчились в школі (середня)?", AuthorId = 20, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 11, Title = "Що краще Дота чи КС2?", AuthorId = 19, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 12, Title = "Як часто ви гуляєте на вулиці?", AuthorId = 18, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 13, Title = "Вам подобається жити в великому чи малому місті?", AuthorId = 17, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 14, Title = "Чи маєете ви вищу освіту?", AuthorId = 16, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 15, Title = "Чи полюбляли ви ходити в дитячий садок?", AuthorId = 16, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 16, Title = "Як часто ви відвідуєте Мак Доналдс?", AuthorId = 14, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 17, Title = "Скільки ви витрачаєте грошей в місяць?", AuthorId = 13, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 18, Title = "Чи живете ви з батьками, чи самі?", AuthorId = 12, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 19, Title = "В якому році почалася Друга світова?", AuthorId = 16, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 20, Title = "Яка з цих страв ваша найулюбленіша?", AuthorId = 10, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 21, Title = "Яка була НАЙБІЛЬША кількість людей на вечірці, яку ви відвідували?", AuthorId = 1, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 22, Title = "Оберіть марки машин, які вам подобаються найбільше", AuthorId = 11, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 23, Title = "Яким супер героєм ви би ніколи не хотіли бути?", AuthorId = 7, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 24, Title = "Що було перше курка чи яйце?", AuthorId = 8, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 25, Title = "Чи подобалась вам хімія у школі?", AuthorId = 12, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 26, Title = "Де вам більше подобалось у школі чи в університеті?", AuthorId = 3, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now },
+                new Post { Id = 27, Title = "Як би вам дали вибір звільнитись з поточоної роботи, чи залишитись на ній назавжди, щоб ви обрали?", Description = "Важливо відмітити, що на поточній роботі, кар'єрний ріст все ще можливий", AuthorId = 1, IsMultiple = false, IsPrivate = false, IsRevotable = true, Created = DateTimeOffset.Now }
+             );
+
+        modelBuilder.Entity<PoolOption>()
+            .HasData(
+                new PoolOption { Id = 1, PostId = 1, Title = "Вдома", Created = DateTimeOffset.Now},
+                new PoolOption { Id = 2, PostId = 1, Title = "У кіно", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 3, PostId = 2, Title = "Європейська", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 4, PostId = 2, Title = "Американська", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 5, PostId = 2, Title = "Латиноамериканська", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 6, PostId = 2, Title = "Азійська", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 7, PostId = 3, Title = "Франція", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 8, PostId = 3, Title = "Німеччина", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 9, PostId = 3, Title = "Країни Балтії", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 10, PostId = 3, Title = "Англію", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 11, PostId = 3, Title = "Америку", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 12, PostId = 3, Title = "Іспанію", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 13, PostId = 3, Title = "Австралію", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 14, PostId = 4, Title = "1 раз", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 15, PostId = 4, Title = "2 рази", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 16, PostId = 4, Title = "3 рази", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 17, PostId = 4, Title = "більше 3", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 18, PostId = 5, Title = "Minecraft", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 19, PostId = 5, Title = "Last of Us", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 20, PostId = 5, Title = "Half-Life", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 21, PostId = 5, Title = "Halo", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 22, PostId = 5, Title = "God of war", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 23, PostId = 5, Title = "Doom eternal", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 24, PostId = 5, Title = "Roblox", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 25, PostId = 6, Title = "Ні, не захопить", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 26, PostId = 6, Title = "Може захопити в майбутньому", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 27, PostId = 6, Title = "Захопить і це точно", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 28, PostId = 7, Title = "Тиждень", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 29, PostId = 7, Title = "Місяць", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 30, PostId = 7, Title = "2 місяці", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 31, PostId = 7, Title = "До 6 місяців", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 32, PostId = 7, Title = "До 1 року", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 33, PostId = 7, Title = "До 3 років", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 34, PostId = 7, Title = "До 5 років", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 35, PostId = 7, Title = "Більше ніж 5 років", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 36, PostId = 8, Title = "Xbox series s", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 37, PostId = 8, Title = "Xbox series x", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 38, PostId = 8, Title = "PlayStation 5", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 39, PostId = 8, Title = "PlayStation 4", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 40, PostId = 9, Title = "10 зірок", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 41, PostId = 9, Title = "40 зірок", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 42, PostId = 9, Title = "62 зірки", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 43, PostId = 9, Title = "50 зірок", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 44, PostId = 10, Title = "2", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 45, PostId = 10, Title = "3", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 46, PostId = 10, Title = "4", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 47, PostId = 10, Title = "5", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 48, PostId = 10, Title = "6", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 49, PostId = 10, Title = "7", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 50, PostId = 10, Title = "8", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 51, PostId = 10, Title = "9", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 52, PostId = 10, Title = "10", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 53, PostId = 10, Title = "11", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 54, PostId = 10, Title = "12", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 55, PostId = 11, Title = "Дота краще", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 56, PostId = 11, Title = "КС2 краще", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 57, PostId = 12, Title = "Раз на тиждень", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 58, PostId = 12, Title = "Декілька разів на тиждень", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 59, PostId = 12, Title = "Постійно гуляю", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 60, PostId = 12, Title = "Майже не знаходжусь вдома", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 61, PostId = 13, Title = "Мале місто", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 62, PostId = 13, Title = "Велике місто", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 63, PostId = 14, Title = "Ні, не має", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 64, PostId = 14, Title = "Так, маю", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 65, PostId = 15, Title = "Так", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 66, PostId = 15, Title = "Ні", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 67, PostId = 16, Title = "не відвідую", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 68, PostId = 16, Title = "раз на місяць", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 69, PostId = 16, Title = "ходжу туди раз на тиждень", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 70, PostId = 17, Title = "До 200 долларів", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 71, PostId = 17, Title = "До 500 долларів", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 72, PostId = 17, Title = "До 1000 долларів", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 73, PostId = 17, Title = "До 2000 долларів", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 74, PostId = 17, Title = "більше", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 75, PostId = 18, Title = "Сам", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 76, PostId = 18, Title = "З батьками", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 77, PostId = 19, Title = "В 1941", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 78, PostId = 19, Title = "В 1939", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 79, PostId = 19, Title = "В 1932", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 80, PostId = 19, Title = "Волинська різня...", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 81, PostId = 20, Title = "Борщ", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 82, PostId = 20, Title = "Пельмені", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 83, PostId = 20, Title = "Хачапурі", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 84, PostId = 20, Title = "Піцца", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 85, PostId = 20, Title = "Бургери", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 86, PostId = 21, Title = "до 5", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 87, PostId = 21, Title = "до 10", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 88, PostId = 21, Title = "до 15", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 89, PostId = 21, Title = "до 20", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 90, PostId = 21, Title = "до 25", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 91, PostId = 21, Title = "більше", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 92, PostId = 22, Title = "Toyota", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 93, PostId = 22, Title = "Ford", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 94, PostId = 22, Title = "Hunda", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 95, PostId = 22, Title = "Audi", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 96, PostId = 22, Title = "Reno", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 97, PostId = 22, Title = "Fiat", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 98, PostId = 22, Title = "Volkswagen", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 99, PostId = 23, Title = "Супер мен", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 100, PostId = 23, Title = "Залізна людина", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 101, PostId = 23, Title = "Халк", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 102, PostId = 23, Title = "Капітан Америка", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 103, PostId = 23, Title = "Людина Павук", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 104, PostId = 23, Title = "Тор", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 105, PostId = 24, Title = "Курка", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 106, PostId = 24, Title = "Яйце", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 107, PostId = 25, Title = "Ні", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 108, PostId = 25, Title = "Так", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 109, PostId = 26, Title = "Університет", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 110, PostId = 26, Title = "Школа", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 111, PostId = 27, Title = "Так", Created = DateTimeOffset.Now },
+                new PoolOption { Id = 112, PostId = 27, Title = "Ні", Created = DateTimeOffset.Now }
+            );
+
+        Random random = new Random();
+        List<Vote> votes = new();
+        int id = 0;
+
+        for ( int i = 1; i < 112; i++)
+        {
+            for (int j = 1; j < 22; j++)
+            {
+                if (random.Next(1, 10) >= 5)
+                {
+                    id++;
+                    votes.Add(new Vote { Id = id, UserId = j, PoolOptionId = i, Created = DateTimeOffset.Now });
+                }
+            }
+        }
+
+        modelBuilder.Entity<Vote>()
+            .HasData(votes);
+    }
 }

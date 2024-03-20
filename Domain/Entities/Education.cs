@@ -8,5 +8,5 @@ public class Education : BaseAuditableEntity
     public string Name { get; set; }
     public string Description { get; set; }
     public EducationType EducationType { get; set; }
-    public List<ProfileEducation> ProfileEducations { get; set; }
+    public List<UserEducation> ProfileEducations { get; set; }
 }

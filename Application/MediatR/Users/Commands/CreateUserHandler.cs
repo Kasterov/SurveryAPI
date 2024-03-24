@@ -1,31 +1,51 @@
-﻿using Application.Abstractions.Users;
+﻿using Application.Abstractions.Common;
+using Application.Abstractions.UserCodes;
+using Application.Abstractions.Users;
 using Application.DTOs.Users;
 using AutoMapper;
 using Domain.Entities;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using MediatR;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using MimeKit;
+using MimeKit.Text;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Cryptography;
+using static System.Net.Mime.MediaTypeNames;
+
 namespace Application.MediatR.Users.Commands;
 
 public record CreateUser(CreateUserDTO dto) : IRequest<UserDTO>;
 
 public class CreateUserHandler : IRequestHandler<CreateUser, UserDTO>
 {
-    private readonly IUserRepository _repository;
+    private readonly IUserRepository _uesrRepository;
+    private readonly IUserCodeRepository _uesrCodeRepository;
     private readonly IMapper _mapper;
+    private readonly IMailSenderService _mailSenderService;
+    private readonly ICodeGenerator _codeGenerator;
 
     public CreateUserHandler(
-        IUserRepository repository,
-        IMapper mapper)
+        IUserRepository userRepository,
+        IUserCodeRepository userCodeRepository,
+        IMapper mapper,
+        IMailSenderService mailSenderService,
+        ICodeGenerator codeGenerator)
     {
-        _repository = repository;
+        _uesrRepository = userRepository;
+        _uesrCodeRepository = userCodeRepository;
         _mapper = mapper;
+        _mailSenderService = mailSenderService;
+        _codeGenerator = codeGenerator;
     }
 
     public async Task<UserDTO> Handle(CreateUser request, CancellationToken cancellationToken)
     {
         CreateUserDTO dto = request.dto;
 
-        GeneratePasswordHash(dto.Password, out byte[] passwordHash, out byte[] passwordSalt);
+        _codeGenerator.GenerateHash(dto.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
         var user = new User()
         {
@@ -33,21 +53,24 @@ public class CreateUserHandler : IRequestHandler<CreateUser, UserDTO>
             Email = dto.Email,
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
-            DateOfBirth = dto.DateOfBirth
+            DateOfBirth = dto.DateOfBirth,
+            IsActive = false
         };
 
-        var entity = await _repository.Add(user);
+        var entity = await _uesrRepository.Add(user);
         var result = _mapper.Map<UserDTO>(entity);
 
-        return result;
-    }
+        var codeToCompleteRegistration = _codeGenerator.GenerateCode();
 
-    private void GeneratePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-    {
-        using (var hmacsha = new HMACSHA512())
+        var createdCode = await _uesrCodeRepository.Add(new()
         {
-            passwordSalt = hmacsha.Key;
-            passwordHash = hmacsha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-        }
+            UserId = result.Id,
+            Code = codeToCompleteRegistration,
+            Type = Domain.Enums.UserCodeType.MailConfirmCode
+        });
+
+        _mailSenderService.SendMail("SurveyUa registration", $"Complete registration: <a href=\"http://localhost:5173/#/verify-email/{codeToCompleteRegistration}\">Verify email</a>", request.dto.Email);
+
+        return result;
     }
 }

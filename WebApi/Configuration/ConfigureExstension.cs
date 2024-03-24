@@ -12,6 +12,9 @@ using Application.Abstractions.Educations;
 using Application.Abstractions.Countries;
 using Application.Abstractions.Hobbies;
 using Application.Abstractions.Files;
+using Application.Abstractions.Complains;
+using Application.Abstractions.SavedPosts;
+using Application.Abstractions.UserCodes;
 
 namespace WebApi.Configuration;
 
@@ -29,6 +32,9 @@ public static class ConfigureExstension
         builder.Services.AddScoped<ICountryRepository, CountryRepository>();
         builder.Services.AddScoped<IHobbyRepository, HobbyRepository>();
         builder.Services.AddScoped<IMediaRepository, MediaRepository>();
+        builder.Services.AddScoped<IComplainRepository, ComplainRepository>();
+        builder.Services.AddScoped<ISavedPostRepository, SavedPostRepository>();
+        builder.Services.AddScoped<IUserCodeRepository, UserCodeRepository>();
 
         builder.Services
             .AddApplication()

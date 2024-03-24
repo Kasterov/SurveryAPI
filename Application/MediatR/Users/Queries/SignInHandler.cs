@@ -10,12 +10,12 @@ public class SignInHandler : IRequestHandler<SignIn, string>
 {
     private readonly IUserRepository _repository;
     private readonly IMapper _mapper;
-    private readonly IVerifyPasswordService _verifyPasswordService;
+    private readonly IVerifyHashService _verifyPasswordService;
     private readonly IJWTGeneratorService _jwtGeneratorService;
 
     public SignInHandler(IUserRepository repository,
         IMapper mapper,
-        IVerifyPasswordService verifyPasswordService,
+        IVerifyHashService verifyPasswordService,
         IJWTGeneratorService jwtGeneratorService)
     {
         _repository = repository;
@@ -32,7 +32,12 @@ public class SignInHandler : IRequestHandler<SignIn, string>
             throw new InvalidDataException("No user with such name!");
         }
 
-        if (!_verifyPasswordService.VerifyPasswordHash(request.SignInDTO.Password, user.PasswordHash, user.PasswordSalt))
+        if (!user.IsActive)
+        {
+            throw new InvalidOperationException("User exist but email is not verified!");
+        }
+
+        if (!_verifyPasswordService.VerifyHash(request.SignInDTO.Password, user.PasswordHash, user.PasswordSalt))
         {
             throw new InvalidDataException("Wrong password!");
         }

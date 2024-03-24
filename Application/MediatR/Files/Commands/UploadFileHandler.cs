@@ -1,15 +1,7 @@
 ﻿using Application.Abstractions.Files;
-using Application.Abstractions.Posts;
 using Application.DTOs.FileEntities;
-using Application.DTOs.Posts;
-using AutoMapper;
 using Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.MediatR.Files.Commands;
 

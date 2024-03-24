@@ -11,5 +11,7 @@ public class Post : BaseAuditableEntity
     public bool IsPrivate { get; set; }
     public int AuthorId { get; set; }
     public User Author { get; set; }
+    public List<SavedPost> SavedPosts { get; set; }
     public List<PoolOption> Options { get; set; }
+    public List<Complain> Complains { get; set; }
 }

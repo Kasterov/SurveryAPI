@@ -14,4 +14,5 @@ public interface IUserRepository
     public Task<User> UpdateUserProfile(User profile);
     public Task<ProfileViewDTO> GetUserProfileViewDTO(int userId);
     public Task<User?> GetProfileByUserId(int userId);
+    public Task<bool> PatchActivateUser(int userId);
 }

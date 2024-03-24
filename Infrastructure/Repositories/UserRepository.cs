@@ -148,4 +148,18 @@ public class UserRepository : IUserRepository
 
         return profile;
     }
+
+    public async Task<bool> PatchActivateUser(int userId)
+    {
+       var updatedEntity = _context.Users.Attach(new User()
+        {
+            IsActive = true,
+            Id = userId
+        }).Entity;
+
+        var res = _context.Users.Entry(updatedEntity).Property(x => x.IsActive).IsModified = true;
+        await _context.SaveChangesAsync();
+
+        return res;
+    }
 }

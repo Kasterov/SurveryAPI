@@ -20,6 +20,14 @@ public class UserController : ControllerBase
         _mediator = mediator;
     }
 
+    [HttpPost("verify-email")]
+    public async Task<IActionResult> VerifyEmail([FromBody] string code)
+    {
+        var result = await _mediator.Send(new VerifyUserEmail(code));
+
+        return Ok(result);
+    }
+
     [HttpPost("user")]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserDTO command)
     {

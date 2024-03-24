@@ -1,8 +1,11 @@
 ﻿using Application.Abstractions.Common;
 using Application.Abstractions.Files;
+using Application.Abstractions.UserCodes;
 using Application.Abstractions.Users;
 using Infrastructure.Db;
 using Infrastructure.Interceptors;
+using Infrastructure.Services.Code;
+using Infrastructure.Services.Mail;
 using Infrastructure.Services.Media;
 using Infrastructure.Services.Users;
 using Microsoft.AspNetCore.Http;
@@ -19,11 +22,13 @@ public static class DependencyInjection
     {
         var connectionString = configuration.GetConnectionString("DefualtConnection");
 
-        services.AddScoped<IVerifyPasswordService, VerifyPasswordService>();
+        services.AddScoped<IVerifyHashService, VerifyHashService>();
         services.AddScoped<IMediaLinkGeneratorService, MediaLinkGeneratorService>();
         services.AddScoped<IJWTGeneratorService, JWTGeneratorService>();
-        services.AddScoped<IIdentity, UserIdentity>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddScoped<IMailSenderService, MailSenderService>();
+        services.AddScoped<ICodeGenerator, CodeGenerator>();
+        services.AddScoped<IIdentity, UserIdentity>();
 
         services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
         services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();

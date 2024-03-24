@@ -18,5 +18,8 @@ public interface IApplicationDbContext
     DbSet<UserJob> ProfileJobs { get; }
     DbSet<UserHobby> ProfileHobbies { get; }
     DbSet<UserEducation> ProfileEducations { get; }
+    DbSet<Complain> Complains { get; }
+    DbSet<SavedPost> SavedPosts { get; }
+    DbSet<UserCode> UserCodes { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

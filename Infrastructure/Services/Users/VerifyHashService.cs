@@ -3,9 +3,9 @@ using System.Security.Cryptography;
 
 namespace Infrastructure.Services.Users;
 
-public class VerifyPasswordService : IVerifyPasswordService
+public class VerifyHashService : IVerifyHashService
 {
-    public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+    public bool VerifyHash(string password, byte[] passwordHash, byte[] passwordSalt)
     {
         using (var hmacsha = new HMACSHA512(passwordSalt))
         {
